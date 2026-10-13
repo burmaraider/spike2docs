@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SPIKE2 Hardware Notes</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&family=Noto+Sans+Mono:wght@400;500&display=swap">
+<style>
+:root{color-scheme:light;--bg:#ffffff;--panel:#f5f7f9;--ink:#1f2429;--muted:#5d6873;--line:#d4dae0;--link:#0a5fc4;--cl:#1c69c9;--cl-bg:#e3edfa;--sv:#17795a;--sv-bg:#dcf2e8;--gm:#9c5600;--gm-bg:#faecd6;--ex:#6f47ad;--ex-bg:#eee7f8;--hot:#c0352b;--hot-bg:#fbe6e3;--sans:"Noto Sans","Open Sans",system-ui,sans-serif;--mono:"Noto Sans Mono",ui-monospace,Menlo,Consolas,monospace}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14181d;--panel:#1b2128;--ink:#e4e8ec;--muted:#98a3ae;--line:#343d47;--link:#6fb0ff;--cl:#6fb0ff;--cl-bg:#172b45;--sv:#5fcfa4;--sv-bg:#12332a;--gm:#e6aa55;--gm-bg:#3a2a10;--ex:#b99cf0;--ex-bg:#2b2140;--hot:#ff7d70;--hot-bg:#3d1a17;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#14181d;--panel:#1b2128;--ink:#e4e8ec;--muted:#98a3ae;--line:#343d47;--link:#6fb0ff;--cl:#6fb0ff;--cl-bg:#172b45;--sv:#5fcfa4;--sv-bg:#12332a;--gm:#e6aa55;--gm-bg:#3a2a10;--ex:#b99cf0;--ex-bg:#2b2140;--hot:#ff7d70;--hot-bg:#3d1a17;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.6 var(--sans)}
+[hidden]{display:none!important}
+a{color:var(--link)}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--link);outline-offset:2px}
+code,.m{font-family:var(--mono);font-size:0.88em}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+.top-in{max-width:1080px;margin:0 auto;padding:10px 20px;display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 28px}
+.brand{font:700 1.5rem/1 var(--sans);letter-spacing:-0.01em}
+.tabs{display:flex;flex-wrap:wrap;gap:2px 4px;flex:1}
+.tabs button{background:none;border:0;padding:6px 10px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--ink)}
+#theme{background:none;border:1px solid var(--line);border-radius:999px;padding:2px 12px;font-size:0.8rem;color:var(--muted);cursor:pointer}
+.wrap{max-width:1080px;margin:0 auto;padding:28px 20px 80px}
+.view{display:flex;flex-direction:column;gap:44px;scroll-margin-top:120px}
+.view>section{display:flex;flex-direction:column;gap:14px;min-width:0}
+h1{font:700 2rem/1.2 var(--sans);margin:0;text-wrap:balance}
+h2{font:700 1.5rem/1.25 var(--sans);margin:0;text-wrap:balance}
+h3{font:700 1rem/1.3 var(--sans);margin:0}
+p{margin:0;max-width:72ch}
+ul,ol{margin:0;padding-left:22px;max-width:72ch}
+li{margin:3px 0}
+.note{color:var(--muted);font-size:0.9rem}
+.lab{font:600 0.72rem var(--sans);letter-spacing:0.06em;text-transform:uppercase;color:var(--muted)}
+dl.feat{display:grid;grid-template-columns:minmax(0,13rem) minmax(0,1fr);gap:10px 24px;margin:0;max-width:60rem}
+dl.feat dt{font-weight:700}
+dl.feat dd{margin:0}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:0.9rem}
+th,td{text-align:left;vertical-align:top;padding:7px 14px 7px 0;border-bottom:1px solid var(--line)}
+th{font:600 0.72rem var(--sans);letter-spacing:0.06em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+td.n{font-family:var(--mono);font-size:0.84rem;white-space:nowrap}
+td.w{font-family:var(--mono);font-size:0.84rem}
+pre.code{font:400 0.8rem/1.5 var(--mono);background:var(--panel);border:1px solid var(--line);border-radius:3px;padding:10px 12px;margin:0;overflow-x:auto;white-space:pre;max-width:100%}
+.card{border:1px solid var(--line);background:var(--panel);padding:14px 16px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.card p{font-size:0.93rem;max-width:none}
+.duo{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;align-items:start}
+.trio{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;align-items:start}
+.draw{overflow-x:auto;border:1px solid var(--line);background:var(--bg);padding:8px;min-width:0}
+.draw svg{display:block;width:100%;min-width:680px;height:auto}
+svg text{font-family:var(--sans)}
+.t{font:600 13px var(--sans);fill:var(--ink)}
+.s{font:400 11px var(--mono);fill:var(--muted)}
+.mid{text-anchor:middle}
+.g-cl rect{fill:var(--cl-bg);stroke:var(--cl);stroke-width:1.3}
+.g-sv rect{fill:var(--sv-bg);stroke:var(--sv);stroke-width:1.3}
+.g-gm rect{fill:var(--gm-bg);stroke:var(--gm);stroke-width:1.3}
+.g-ex rect{fill:var(--ex-bg);stroke:var(--ex);stroke-width:1.3}
+.g-nt rect{fill:var(--panel);stroke:var(--muted);stroke-width:1.3}
+.proc{fill:none;stroke:var(--muted);stroke-width:1.3;stroke-dasharray:7 5}
+.e{stroke:var(--ink);stroke-width:1.3;fill:none}
+.bus{stroke:var(--ink);stroke-width:3;fill:none}
+/* evidence tags */
+.ev{display:inline-block;font:600 0.68rem var(--sans);letter-spacing:0.05em;text-transform:uppercase;border:1px solid;border-radius:3px;padding:0 6px;line-height:1.5;white-space:nowrap;vertical-align:1px}
+.ev.code{color:var(--cl);background:var(--cl-bg);border-color:var(--cl)}
+.ev.meas{color:var(--sv);background:var(--sv-bg);border-color:var(--sv)}
+.ev.model{color:var(--gm);background:var(--gm-bg);border-color:var(--gm)}
+.ev.unk{color:var(--hot);background:var(--hot-bg);border-color:var(--hot)}
+.ev.xref{color:var(--ex);background:var(--ex-bg);border-color:var(--ex)}
+.ev.fw{color:var(--ink);background:var(--panel);border-color:var(--ink)}
+/* byte strips */
+.bytes{display:flex;flex-wrap:wrap;gap:3px}
+.by{display:flex;flex-direction:column;gap:1px;min-width:46px;border:1px solid var(--line);background:var(--panel);padding:4px 7px}
+.by b{font:500 0.95rem var(--mono)}
+.by span{font:400 0.68rem/1.25 var(--sans);color:var(--muted);max-width:11rem}
+.by.r-addr{background:var(--cl-bg);border-color:var(--cl)}
+.by.r-cmd{background:var(--ex-bg);border-color:var(--ex)}
+.by.r-arg,.by.r-data{background:var(--gm-bg);border-color:var(--gm)}
+.by.r-sum{background:var(--sv-bg);border-color:var(--sv)}
+.by.r-st{background:var(--hot-bg);border-color:var(--hot)}
+.by.r-rl{border-style:dashed;border-color:var(--muted)}
+.dir{font:600 0.72rem var(--mono);color:var(--muted);margin-top:4px}
+/* bit field */
+table.bits{width:auto}
+table.bits td,table.bits th{border:1px solid var(--line);padding:5px 12px;text-align:center}
+table.bits td{font-family:var(--mono);font-size:0.84rem}
+/* commands */
+.pills{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.pills button{background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:4px 13px;font-size:0.9rem;cursor:pointer}
+.pills button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+input[type=text],textarea,select{width:100%;padding:7px 9px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:400 0.9rem var(--mono);border-radius:0}
+textarea{resize:vertical;min-height:3.2em}
+.pills input{max-width:16rem}
+.row{display:grid;grid-template-columns:minmax(0,1fr) 7rem 7rem;gap:10px;align-items:end}
+.row label,.fld label{display:flex;flex-direction:column;gap:3px}
+.fld{display:flex;flex-direction:column;gap:10px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:500 0.8rem var(--mono);background:var(--panel);border:1px solid var(--line);border-radius:3px;padding:2px 7px;cursor:pointer;text-align:left}
+.chip:hover{border-color:var(--ink)}
+#dec-out{display:flex;flex-direction:column;gap:12px}
+#dec-out ul{font-size:0.92rem;max-width:none}
+.bad{color:var(--hot);font-weight:600}
+.good{color:var(--sv);font-weight:600}
+ol.steps{list-style:none;padding:0;counter-reset:st;display:flex;flex-direction:column;max-width:none}
+ol.steps li{counter-increment:st;display:grid;grid-template-columns:2.2em minmax(0,1fr);gap:4px;border-left:3px solid var(--line);padding:6px 10px;margin:0}
+ol.steps li::before{content:counter(st);font:500 0.85rem var(--mono);color:var(--muted)}
+@media (max-width:800px){.duo,.trio{grid-template-columns:minmax(0,1fr)}dl.feat{grid-template-columns:minmax(0,1fr);gap:2px}dl.feat dd{margin-bottom:12px}h1{font-size:1.6rem}.row{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.row label:first-child{grid-column:1/-1}.top-in,.wrap{padding-inline:16px}}
+.pages{display:flex;flex-wrap:wrap;gap:2px 14px;font-size:0.82rem;width:100%}
+.pages a{color:var(--muted);text-decoration:none}
+.pages a:hover,.pages a[aria-current="page"]{color:var(--ink);text-decoration:underline}
+.ev.card{color:var(--ink);background:var(--panel);border-color:var(--ink)}
+</style>
+<div class="top"><div class="top-in">
+<span class="brand">SPIKE2 Hardware Notes</span>
+<div class="tabs" role="tablist">
+<button role="tab" data-view="home">Home</button>
+</div>
+<button id="theme" type="button" aria-label="Switch colour theme">theme</button>
+<nav class="pages" aria-label="Pages"><a href="index.html" aria-current="page">Home</a><a href="cpu_board.html">CPU board</a><a href="node_boards.html">Node boards</a><a href="lcd_node.html">LCD node</a><a href="sd_card.html">SD card</a></nav>
+</div></div>
+
+<div class="wrap">
+<div class="view" id="home" role="tabpanel">
+<section>
+<h1>Stern SPIKE2, as its games see it</h1>
+<p>SPIKE2 is the electronics platform of Stern pinball machines from 2016 on: one CPU board running Linux, and a chain of small microcontroller boards that read the switches and drive the coils, motors and lamps. These pages describe that hardware from the software's side: what the game program opens, what it sends, and what it expects back.</p>
+<p>They are the working notes of a static recompilation project, which turns the game on an SD card into a native program for a PC and has to stand in for every piece of hardware the game talks to. What is written here is what that took to find out.</p>
+<p class="note">Read this first: nothing here was captured from, or run on, real hardware. Everything is read from the software on game cards and from what that software does when it runs against a simulator. Each statement carries one of the tags below.</p>
+</section>
+<section>
+<h2>Pages</h2>
+<div class="duo">
+<div class="card"><h3><a href="cpu_board.html">CPU board</a></h3><p>The Linux computer in the backbox: the device nodes the game opens, the chips on its I2C bus, the cabinet switches it reads itself, its displays and its two sound codecs.</p></div>
+<div class="card"><h3><a href="node_boards.html">Node boards</a></h3><p>The node bus and the boards on it: frames, every command and reply byte by byte, switches, coils, steppers, lamps, firmware and the boot loader. With a message decoder.</p></div>
+<div class="card"><h3><a href="lcd_node.html">LCD node</a></h3><p>The node board that drives small picture screens on the playfield, as Batman 66 uses it: frames kept in the board's own flash and played by number.</p></div>
+<div class="card"><h3><a href="sd_card.html">SD card</a></h3><p>What is on a game's card: partitions, the system, the game folder and its files, and how the system starts the game.</p></div>
+</div>
+</section>
+<section>
+<h2>Where it comes from</h2>
+<div class="tbl"><table><thead><tr><th>Title</th><th>Release</th><th>Used for</th></tr></thead><tbody>
+<tr><td>Godzilla LE</td><td>1.16.0</td><td>The first title recompiled; most addresses on these pages are in its executable.</td></tr>
+<tr><td>Dungeons &amp; Dragons LE</td><td>1.10.0</td><td>Second title; its card supplied the node firmware (1.37.0) and bridge firmware (0.5.0) that were read.</td></tr>
+<tr><td>Star Wars Pro</td><td>1.31.0</td><td>Third title; the first with a second display on the CPU board.</td></tr>
+<tr><td>Batman</td><td>1.14.0</td><td>Fourth title; the first with an LCD node board.</td></tr>
+</tbody></table></div>
+<p>All four are current releases and were built with the same compiler and system libraries. An address belongs to the one build it is given for: the same code sits somewhere else in every other build.</p>
+<p class="note">The recompilation itself, and the tool that builds a game from a card image, are in the repository these pages belong to. No game code or data is part of it.</p>
+</section>
+</div>
+</div>
+<script>
+(function(){"use strict";
+const $=(s,r)=>(r||document).querySelector(s),$$=(s,r)=>Array.from((r||document).querySelectorAll(s));
+const tabs=$$(".tabs button"),views=$$(".view");
+function show(id,push){
+  if(!views.some(v=>v.id===id))id=views[0].id;
+  views.forEach(v=>v.hidden=v.id!==id);
+  tabs.forEach(t=>t.setAttribute("aria-selected",t.dataset.view===id?"true":"false"));
+  if(push){try{history.replaceState(null,"","#"+id);}catch(e){}window.scrollTo(0,0);}
+}
+tabs.forEach(t=>t.addEventListener("click",()=>show(t.dataset.view,true)));
+window.addEventListener("hashchange",()=>{show(location.hash.slice(1),false);window.scrollTo(0,0);});
+show(location.hash.slice(1)||views[0].id,false);
+const root=document.documentElement,tb=$("#theme");
+function isDark(){const t=root.getAttribute("data-theme");return t?t==="dark":matchMedia("(prefers-color-scheme:dark)").matches;}
+function label(){tb.textContent=isDark()?"light":"dark";}
+try{const s=localStorage.getItem("nb-theme");if(s)root.setAttribute("data-theme",s);}catch(e){}
+label();
+tb.addEventListener("click",()=>{const n=isDark()?"light":"dark";root.setAttribute("data-theme",n);try{localStorage.setItem("nb-theme",n);}catch(e){}label();});
+})();
+</script>
+</html>

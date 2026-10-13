@@ -1,0 +1,1446 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SPIKE2 Node Boards</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&family=Noto+Sans+Mono:wght@400;500&display=swap">
+<style>
+:root{color-scheme:light;--bg:#ffffff;--panel:#f5f7f9;--ink:#1f2429;--muted:#5d6873;--line:#d4dae0;--link:#0a5fc4;--cl:#1c69c9;--cl-bg:#e3edfa;--sv:#17795a;--sv-bg:#dcf2e8;--gm:#9c5600;--gm-bg:#faecd6;--ex:#6f47ad;--ex-bg:#eee7f8;--hot:#c0352b;--hot-bg:#fbe6e3;--sans:"Noto Sans","Open Sans",system-ui,sans-serif;--mono:"Noto Sans Mono",ui-monospace,Menlo,Consolas,monospace}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14181d;--panel:#1b2128;--ink:#e4e8ec;--muted:#98a3ae;--line:#343d47;--link:#6fb0ff;--cl:#6fb0ff;--cl-bg:#172b45;--sv:#5fcfa4;--sv-bg:#12332a;--gm:#e6aa55;--gm-bg:#3a2a10;--ex:#b99cf0;--ex-bg:#2b2140;--hot:#ff7d70;--hot-bg:#3d1a17;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#14181d;--panel:#1b2128;--ink:#e4e8ec;--muted:#98a3ae;--line:#343d47;--link:#6fb0ff;--cl:#6fb0ff;--cl-bg:#172b45;--sv:#5fcfa4;--sv-bg:#12332a;--gm:#e6aa55;--gm-bg:#3a2a10;--ex:#b99cf0;--ex-bg:#2b2140;--hot:#ff7d70;--hot-bg:#3d1a17;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.6 var(--sans)}
+[hidden]{display:none!important}
+a{color:var(--link)}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--link);outline-offset:2px}
+code,.m{font-family:var(--mono);font-size:0.88em}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+.top-in{max-width:1080px;margin:0 auto;padding:10px 20px;display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 28px}
+.brand{font:700 1.5rem/1 var(--sans);letter-spacing:-0.01em}
+.tabs{display:flex;flex-wrap:wrap;gap:2px 4px;flex:1}
+.tabs button{background:none;border:0;padding:6px 10px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--ink)}
+#theme{background:none;border:1px solid var(--line);border-radius:999px;padding:2px 12px;font-size:0.8rem;color:var(--muted);cursor:pointer}
+.wrap{max-width:1080px;margin:0 auto;padding:28px 20px 80px}
+.view{display:flex;flex-direction:column;gap:44px;scroll-margin-top:120px}
+.view>section{display:flex;flex-direction:column;gap:14px;min-width:0}
+h1{font:700 2rem/1.2 var(--sans);margin:0;text-wrap:balance}
+h2{font:700 1.5rem/1.25 var(--sans);margin:0;text-wrap:balance}
+h3{font:700 1rem/1.3 var(--sans);margin:0}
+p{margin:0;max-width:72ch}
+ul,ol{margin:0;padding-left:22px;max-width:72ch}
+li{margin:3px 0}
+.note{color:var(--muted);font-size:0.9rem}
+.lab{font:600 0.72rem var(--sans);letter-spacing:0.06em;text-transform:uppercase;color:var(--muted)}
+dl.feat{display:grid;grid-template-columns:minmax(0,13rem) minmax(0,1fr);gap:10px 24px;margin:0;max-width:60rem}
+dl.feat dt{font-weight:700}
+dl.feat dd{margin:0}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:0.9rem}
+th,td{text-align:left;vertical-align:top;padding:7px 14px 7px 0;border-bottom:1px solid var(--line)}
+th{font:600 0.72rem var(--sans);letter-spacing:0.06em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+td.n{font-family:var(--mono);font-size:0.84rem;white-space:nowrap}
+td.w{font-family:var(--mono);font-size:0.84rem}
+pre.code{font:400 0.8rem/1.5 var(--mono);background:var(--panel);border:1px solid var(--line);border-radius:3px;padding:10px 12px;margin:0;overflow-x:auto;white-space:pre;max-width:100%}
+.card{border:1px solid var(--line);background:var(--panel);padding:14px 16px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.card p{font-size:0.93rem;max-width:none}
+.duo{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;align-items:start}
+.trio{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;align-items:start}
+.draw{overflow-x:auto;border:1px solid var(--line);background:var(--bg);padding:8px;min-width:0}
+.draw svg{display:block;width:100%;min-width:680px;height:auto}
+svg text{font-family:var(--sans)}
+.t{font:600 13px var(--sans);fill:var(--ink)}
+.s{font:400 11px var(--mono);fill:var(--muted)}
+.mid{text-anchor:middle}
+.g-cl rect{fill:var(--cl-bg);stroke:var(--cl);stroke-width:1.3}
+.g-sv rect{fill:var(--sv-bg);stroke:var(--sv);stroke-width:1.3}
+.g-gm rect{fill:var(--gm-bg);stroke:var(--gm);stroke-width:1.3}
+.g-ex rect{fill:var(--ex-bg);stroke:var(--ex);stroke-width:1.3}
+.g-nt rect{fill:var(--panel);stroke:var(--muted);stroke-width:1.3}
+.proc{fill:none;stroke:var(--muted);stroke-width:1.3;stroke-dasharray:7 5}
+.e{stroke:var(--ink);stroke-width:1.3;fill:none}
+.bus{stroke:var(--ink);stroke-width:3;fill:none}
+/* evidence tags */
+.ev{display:inline-block;font:600 0.68rem var(--sans);letter-spacing:0.05em;text-transform:uppercase;border:1px solid;border-radius:3px;padding:0 6px;line-height:1.5;white-space:nowrap;vertical-align:1px}
+.ev.code{color:var(--cl);background:var(--cl-bg);border-color:var(--cl)}
+.ev.meas{color:var(--sv);background:var(--sv-bg);border-color:var(--sv)}
+.ev.model{color:var(--gm);background:var(--gm-bg);border-color:var(--gm)}
+.ev.unk{color:var(--hot);background:var(--hot-bg);border-color:var(--hot)}
+.ev.xref{color:var(--ex);background:var(--ex-bg);border-color:var(--ex)}
+.ev.fw{color:var(--ink);background:var(--panel);border-color:var(--ink)}
+/* byte strips */
+.bytes{display:flex;flex-wrap:wrap;gap:3px}
+.by{display:flex;flex-direction:column;gap:1px;min-width:46px;border:1px solid var(--line);background:var(--panel);padding:4px 7px}
+.by b{font:500 0.95rem var(--mono)}
+.by span{font:400 0.68rem/1.25 var(--sans);color:var(--muted);max-width:11rem}
+.by.r-addr{background:var(--cl-bg);border-color:var(--cl)}
+.by.r-cmd{background:var(--ex-bg);border-color:var(--ex)}
+.by.r-arg,.by.r-data{background:var(--gm-bg);border-color:var(--gm)}
+.by.r-sum{background:var(--sv-bg);border-color:var(--sv)}
+.by.r-st{background:var(--hot-bg);border-color:var(--hot)}
+.by.r-rl{border-style:dashed;border-color:var(--muted)}
+.dir{font:600 0.72rem var(--mono);color:var(--muted);margin-top:4px}
+/* bit field */
+table.bits{width:auto}
+table.bits td,table.bits th{border:1px solid var(--line);padding:5px 12px;text-align:center}
+table.bits td{font-family:var(--mono);font-size:0.84rem}
+/* commands */
+.pills{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.pills button{background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:4px 13px;font-size:0.9rem;cursor:pointer}
+.pills button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+input[type=text],textarea,select{width:100%;padding:7px 9px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:400 0.9rem var(--mono);border-radius:0}
+textarea{resize:vertical;min-height:3.2em}
+.pills input{max-width:16rem}
+.row{display:grid;grid-template-columns:minmax(0,1fr) 7rem 7rem;gap:10px;align-items:end}
+.row label,.fld label{display:flex;flex-direction:column;gap:3px}
+.fld{display:flex;flex-direction:column;gap:10px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:500 0.8rem var(--mono);background:var(--panel);border:1px solid var(--line);border-radius:3px;padding:2px 7px;cursor:pointer;text-align:left}
+.chip:hover{border-color:var(--ink)}
+#dec-out{display:flex;flex-direction:column;gap:12px}
+#dec-out ul{font-size:0.92rem;max-width:none}
+.bad{color:var(--hot);font-weight:600}
+.good{color:var(--sv);font-weight:600}
+ol.steps{list-style:none;padding:0;counter-reset:st;display:flex;flex-direction:column;max-width:none}
+ol.steps li{counter-increment:st;display:grid;grid-template-columns:2.2em minmax(0,1fr);gap:4px;border-left:3px solid var(--line);padding:6px 10px;margin:0}
+ol.steps li::before{content:counter(st);font:500 0.85rem var(--mono);color:var(--muted)}
+@media (max-width:800px){.duo,.trio{grid-template-columns:minmax(0,1fr)}dl.feat{grid-template-columns:minmax(0,1fr);gap:2px}dl.feat dd{margin-bottom:12px}h1{font-size:1.6rem}.row{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.row label:first-child{grid-column:1/-1}.top-in,.wrap{padding-inline:16px}}
+</style>
+
+<div class="top"><div class="top-in">
+<span class="brand">SPIKE2 Node Boards</span>
+<div class="tabs" role="tablist">
+<button role="tab" data-view="overview">Overview</button>
+<button role="tab" data-view="wire">Wire format</button>
+<button role="tab" data-view="bridge">Bridge</button>
+<button role="tab" data-view="commands">Commands</button>
+<button role="tab" data-view="inputs">Inputs</button>
+<button role="tab" data-view="drivers">Drivers</button>
+<button role="tab" data-view="steppers">Steppers</button>
+<button role="tab" data-view="lamps">Lamps</button>
+<button role="tab" data-view="firmware">Firmware</button>
+<button role="tab" data-view="tables">Game tables</button>
+<button role="tab" data-view="sim">Simulator</button>
+<button role="tab" data-view="decoder">Decoder</button>
+</div>
+<button id="theme" type="button" aria-label="Switch colour theme">theme</button>
+</div></div>
+
+<div class="wrap">
+
+<!-- ================================================================ OVERVIEW -->
+<div class="view" id="overview" role="tabpanel">
+<section>
+<h1>How the game talks to its node boards</h1>
+<p>A SPIKE2 pinball machine has one CPU board running Linux and a chain of small microcontroller boards, the <em>node boards</em>, that read the switches and drive the coils, motors and lamps. The game program never touches a coil itself. It writes bytes to one serial port, and a chip on the CPU board, the <em>net bridge</em>, passes them on to the boards.</p>
+<p>This guide is everything this project has recovered about that conversation: the frames, each command and its reply, byte by byte, and the tables inside the game that decide which board is where.</p>
+<p>There are two sources, and they are the two ends of the wire. The game side is the <code>game</code> executable of Godzilla LE 1.16.0, read as ARM code, and the same code located in Dungeons &amp; Dragons LE 1.10.0. The board side is the firmware of the boards and of the bridge, taken from the D&amp;D card, decrypted and read handler by handler.</p>
+<p class="note">Read this first: nothing here was captured from, or run on, real hardware. A request is what the game's code builds. A reply is what the board's firmware code sends. Both are read from code. Where a value was chosen by this project's simulator, or is not known, the text says so with one of the tags below.</p>
+<div class="tbl"><table><thead><tr><th>Tag</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><span class="ev code">game</span></td><td>Read from the ARM code of the game. Addresses are Godzilla LE 1.16.0 unless stated.</td></tr>
+<tr><td><span class="ev fw">firmware</span></td><td>Read from the code of a node board or of the bridge, release 1.37.0 (bridge 0.5.0). Addresses are in <code>pinnode-LPC1313</code> unless another image is named.</td></tr>
+<tr><td><span class="ev meas">measured</span></td><td>Seen in the traffic the lifted game sends to the simulator, or timed from it.</td></tr>
+<tr><td><span class="ev xref">cross-check</span></td><td>Agrees with <a href="https://github.com/bdash/spike">bdash/spike</a>, which talks to real hardware.</td></tr>
+<tr><td><span class="ev model">model</span></td><td>A choice made by this project's simulator. A real board does otherwise or is not known to do the same.</td></tr>
+<tr><td><span class="ev unk">unknown</span></td><td>Not established. Do not build on it.</td></tr>
+</tbody></table></div>
+</section>
+
+<section>
+<h2>The pieces</h2>
+<div class="draw"><svg viewBox="0 0 900 330" role="img" aria-label="The game process on the CPU board writes to /dev/ttymxc1, which reaches the net bridge. The bridge drives the node bus, a chain of node boards. Cabinet switches on the CPU board are read separately over /dev/spidev1.0.">
+<rect class="proc" x="10" y="14" width="400" height="302"/>
+<text class="s" x="22" y="32">CPU board (Linux)</text>
+<g class="g-cl"><rect x="30" y="50" width="170" height="70"/><text class="t" x="42" y="74">game</text><text class="s" x="42" y="92">nodebus thread</text><text class="s" x="42" y="107">node message library</text></g>
+<g class="g-nt"><rect x="30" y="170" width="170" height="52"/><text class="t" x="42" y="192">cpuspi thread</text><text class="s" x="42" y="209">8 bytes each way</text></g>
+<g class="g-ex"><rect x="250" y="50" width="140" height="70"/><text class="t" x="262" y="74">net bridge</text><text class="s" x="262" y="92">node power, poll,</text><text class="s" x="262" y="107">boot hold, status</text></g>
+<g class="g-nt"><rect x="250" y="170" width="140" height="52"/><text class="t" x="262" y="192">local switches</text><text class="s" x="262" y="209">"node 0"</text></g>
+<path class="e" d="M200 85 H250"/><text class="s mid" x="225" y="136">ttymxc1 · 460800 8N1</text>
+<path class="e" d="M200 196 H250"/><text class="s mid" x="225" y="240">spidev1.0 · 100 kHz, mode 3</text>
+<g class="g-nt"><rect x="30" y="258" width="360" height="40"/><text class="s" x="42" y="283">GPIO 75 exported at open; RTS pulsed before a retry</text></g>
+<path class="bus" d="M390 85 H880"/>
+<text class="s" x="430" y="74">node bus: 9-bit, address 1..31, 0 = broadcast</text>
+<g class="g-sv">
+<rect x="430" y="130" width="100" height="56"/><text class="t" x="438" y="152">node 1</text><text class="s" x="438" y="170">pinnode</text>
+<rect x="545" y="130" width="100" height="56"/><text class="t" x="553" y="152">node 4</text><text class="s" x="553" y="170">node4 (QR)</text>
+<rect x="660" y="130" width="100" height="56"/><text class="t" x="668" y="152">node 7, 14</text><text class="s" x="668" y="170">ws2812node</text>
+<rect x="775" y="130" width="100" height="56"/><text class="t" x="783" y="152">node 12</text><text class="s" x="783" y="170">ws2812node</text>
+</g>
+<g class="g-gm">
+<rect x="430" y="230" width="150" height="56"/><text class="t" x="438" y="252">node 8, 9</text><text class="s" x="438" y="270">pinnode (playfield)</text>
+<rect x="600" y="230" width="150" height="56"/><text class="t" x="608" y="252">node 10</text><text class="s" x="608" y="270">tmc5041node (stepper)</text>
+</g>
+<path class="e" d="M480 85 V130 M595 85 V130 M710 85 V130 M825 85 V130"/>
+<path class="e" d="M415 85 V208 H675 V230 M505 208 V230"/>
+<text class="s" x="770" y="262">Godzilla LE 1.16.0</text>
+</svg></div>
+<p class="note">The drawing shows which boards exist, not how they are cabled. The physical order on the bus was not looked at.</p>
+</section>
+
+<section>
+<h2>The short version</h2>
+<dl class="feat">
+<dt>One master</dt><dd>The game speaks, a board answers. A board never speaks first. A board that has news sets a request flag, the bridge finds it with a poll, and the game then asks it.</dd>
+<dt>Two kinds of frame</dt><dd>A <em>bridge command</em> is for the bridge itself: <code>cmd len data</code>. A <em>node message</em> has bit 7 set in its first byte and is passed to a board: <code>0x80|addr len cmd args checksum reply_len</code>.</dd>
+<dt>Nine bits on the bus</dt><dd>Between the bridge and the boards an address byte is sent with a ninth bit set. That is how a board tells the start of a message from data.</dd>
+<dt>Checksum</dt><dd>One byte, chosen so that the bytes it covers add up to zero. The same rule guards the reply.</dd>
+<dt>The game says how long the reply is</dt><dd>The last byte of a node message is the number of reply bytes the bridge must collect. There is no length in the reply.</dd>
+<dt>Time is in board ticks</dt><dd>Each board reports a tick rate in its version reply and the game converts every duration with <code>ms * rate / 1000</code>. Driver and stepper boards report 1280 ticks per second, LED boards 60.</dd>
+<dt>Inputs are active low</dt><dd>A bit of 1 is an open input. Every physical switch in Godzilla is active when its bit is 0.</dd>
+<dt>Boards act on their own</dt><dd>A flipper cannot wait for a round trip. The game loads a rule into the board, and the board fires the coil itself when the switch closes.</dd>
+</dl>
+</section>
+
+<section>
+<h2>Which boards does Godzilla have?</h2>
+<p>From the node list at <code>0x00712bd0</code> and the board-type table at <code>0x007727e4</code>. <span class="ev code">game</span></p>
+<div class="tbl"><table><thead><tr><th>Address</th><th>Board part</th><th>Firmware</th><th>What it does</th></tr></thead><tbody>
+<tr><td class="n">1</td><td class="n">520-5319</td><td class="n">pinnode</td><td>Cabinet.</td></tr>
+<tr><td class="n">2</td><td class="n">520-8511</td><td class="n">ws2812node</td><td>Listed, but the game expects it only when the title has lamps on it. Godzilla has none. See <a href="#tables">Game tables</a>.</td></tr>
+<tr><td class="n">4</td><td class="n">520-5790</td><td class="n">node4</td><td>QR scanner.</td></tr>
+<tr><td class="n">7, 14</td><td class="n">520-8511</td><td class="n">ws2812node</td><td>7 speaker lights, 14 topper.</td></tr>
+<tr><td class="n">8, 9</td><td class="n">520-7017</td><td class="n">pinnode</td><td>Playfield: switches, coils, lamps.</td></tr>
+<tr><td class="n">10</td><td class="n">520-5781</td><td class="n">tmc5041node</td><td>Stepper driver (the building).</td></tr>
+<tr><td class="n">12</td><td class="n">520-6976</td><td class="n">ws2812node</td><td>LED board.</td></tr>
+</tbody></table></div>
+<p>Node 0 is not on the bus. It is the name the game's tables use for the switches wired to the CPU board, read over SPI. Nodes 2, 7, 12 and 14 carry node-list flag 4: the game does not mind when they are absent.</p>
+<p>Dungeons &amp; Dragons LE 1.10.0 decodes to nodes 1, 2, 4, 7, 8, 9, 10, 12 and 14, with firmware 1.37.0 on its card where Godzilla has 1.36.0. Its node 12 is a <code>coil4node</code>, a board type Godzilla does not have.</p>
+</section>
+
+<section>
+<h2>What happens from power-up?</h2>
+<p>Each step below is established from the game's code or from recorded traffic. The first and the last two have a known place. The order of the steps between them was only partly written down.</p>
+<ol class="steps">
+<li><span><code>nodebus_open</code> <code>0x005b5018</code> exports GPIO 75, opens <code>/dev/ttymxc1</code> and turns node power on with bridge command <code>07</code>.</span></li>
+<li><span>The game reads the bridge version (<code>03</code>). A bridge at 0.3.0 or later has a 4-byte status word.</span></li>
+<li><span><code>node_discover</code> <code>0x002df8dc</code> finds out which listed boards answer. A board that does gets "found" in its record (<code>0x00208f84</code>), and its version is read with <code>fe</code>.</span></li>
+<li><span><code>node_grade_firmware</code> <code>0x002ddf00</code> compares each version reply with the header of the board's image file on the card. A mismatch, or a board answering from its boot loader, starts a firmware update. See <a href="#firmware">Firmware</a>.</span></li>
+<li><span>Board set-up <code>0x002deb78</code>: dimensions (<code>14</code>), fault masks (<code>72</code>, <code>46</code>), fault time (<code>48</code>), fault detection (<code>44</code>), switch debounce (<code>70</code>).</span></li>
+<li><span>Self-test: every LED is pulsed once with its mask bit cleared and the board status is read for a fault. Every driver is fired once with a 1-tick pulse.</span></li>
+<li><span>The last bus action of <code>node_init</code> <code>0x002dfd40</code> is bridge command <code>0b</code> with argument 6, which sets the backbox lamp's PWM period.</span></li>
+<li><span>From then on the nodebus thread <code>0x002e0890</code> polls the bridge (<code>00</code>), reads inputs from boards that ask (<code>11</code>), and the rest of the game sends lamp and driver commands as it pleases.</span></li>
+</ol>
+<p class="note">On the original timing node init takes about 27 s, most of it fixed settle delays.</p>
+</section>
+</div>
+
+<!-- ================================================================ WIRE -->
+<div class="view" id="wire" role="tabpanel" hidden>
+<section>
+<h1>What is on the wire?</h1>
+<p>There are two wires. From the game to the bridge: bytes at 460800 baud, 8 data bits, no parity, one stop bit, 21.7 µs per byte. All of it passes through one function, <code>nodebus_exchange_data</code> at <code>0x005ad984</code>, which calls <code>tcflush(TCIFLUSH)</code>, writes the frame, and reads as many reply bytes as the frame asks for. <span class="ev code">game</span> <span class="ev xref">cross-check</span></p>
+<p>From the bridge to the boards: the same bytes with a ninth bit that marks an address byte. <span class="ev fw">firmware</span></p>
+<p>Multi-byte numbers are little-endian, with one exception: the raw SPI words of commands <code>20</code> and <code>21</code>.</p>
+</section>
+
+<section>
+<h2>Bridge command</h2>
+<p>First byte below <code>0x80</code>. The bridge consumes it; no board sees it.</p>
+<div class="bytes" data-b="07=cmd=command;01=len=data bytes that follow;01=arg=data"></div>
+<p>Command <code>00</code>, the poll, is the exception: it is that one byte, with no length. A bridge reply is raw data, with no checksum and no status byte. Its length is fixed per command and listed on the <a href="#bridge">Bridge</a> tab.</p>
+</section>
+
+<section>
+<h2>Node message</h2>
+<p>First byte <code>0x80</code> or above. Here the game asks node 8 for its inputs:</p>
+<div class="dir">game → bridge → node 8</div>
+<div class="bytes" data-b="88=addr=0x80 | address 8;02=len=command + args + checksum;11=cmd=read inputs;65=sum=checksum;0c=rl=reply length: 10 data + 2"></div>
+<div class="dir">node 8 → bridge → game</div>
+<div class="bytes" data-b="ff=data=inputs 0-7;ff=data=8-15;ff=data=16-23;ff=data=24-31;ff=data=32-39;ff=data=40-47;ff=data=48-55;ff=data=56-63;40=data=age, LE16;01=data=320 ticks;c7=sum=checksum;00=st=status"></div>
+<div class="tbl"><table><thead><tr><th>Field</th><th>Size</th><th>Content</th></tr></thead><tbody>
+<tr><td class="n">address</td><td class="n">1</td><td>Bit 7 always set. Bits 0-5 are the node address; 0 is broadcast. Bit 6 marks a scrambled payload (below).</td></tr>
+<tr><td class="n">len</td><td class="n">1</td><td>Number of bytes from the command through the checksum: 1 + arguments + 1. The whole frame is <code>len + 3</code> bytes. A board takes at most 0x84 bytes after the address.</td></tr>
+<tr><td class="n">cmd</td><td class="n">1</td><td>The command. See <a href="#commands">Commands</a>.</td></tr>
+<tr><td class="n">args</td><td class="n">len − 2</td><td>Arguments of the command.</td></tr>
+<tr><td class="n">checksum</td><td class="n">1</td><td><code>−(sum of every byte before it)</code>, address and length included. All bytes up to and including the checksum add up to 0 modulo 256. Above: 88 + 02 + 11 = 9b, and 9b + 65 = 100.</td></tr>
+<tr><td class="n">reply_len</td><td class="n">1</td><td>For the bridge, not for the board. 0 for a message without a reply, otherwise the data length plus 2. It is outside the checksum.</td></tr>
+</tbody></table></div>
+</section>
+
+<section>
+<h2>What the bridge does with it</h2>
+<ol class="steps">
+<li><span>It sends the address byte to the boards with the ninth bit set, then the length byte and that many bytes as plain data.</span></li>
+<li><span>It reads the reply length from the game. With 0 the exchange is over.</span></li>
+<li><span>Otherwise it turns the line round and forwards <code>reply_len − 1</code> bytes from the board to the game: the data and the board's checksum.</span></li>
+<li><span>It appends its own status byte.</span></li>
+</ol>
+<p>Each reply byte must arrive within the reply time, 4800 timer counts unless command <code>06</code> set another for this one exchange. When a byte does not come, the bridge sends <code>ee</code> in its place, fills the rest of the reply with <code>55</code>, and sets status bit 2. The game always gets the number of bytes it asked for. <span class="ev fw">firmware</span></p>
+</section>
+
+<section>
+<h2>Node reply</h2>
+<div class="tbl"><table><thead><tr><th>Field</th><th>Size</th><th>From</th><th>Content</th></tr></thead><tbody>
+<tr><td class="n">data</td><td class="n">reply_len − 2</td><td>board</td><td>Whatever the command returns.</td></tr>
+<tr><td class="n">checksum</td><td class="n">1</td><td>board</td><td>Data plus checksum add up to 0 modulo 256.</td></tr>
+<tr><td class="n">status</td><td class="n">1</td><td>bridge</td><td>The low byte of the bridge's status word.</td></tr>
+</tbody></table></div>
+<div class="tbl"><table><thead><tr><th>Status bit</th><th>Mask</th><th>Meaning</th><th>What the game does</th></tr></thead><tbody>
+<tr><td class="n">0</td><td class="n">0x01</td><td>Receive error on the port to the game.</td><td></td></tr>
+<tr><td class="n">1</td><td class="n">0x02</td><td>The upper bits of the bridge's status word are not all zero: it restarted, or a line error was counted.</td><td>Sends bridge command <code>05</code> to read the word (<code>0x005aea40</code>).</td></tr>
+<tr><td class="n">2</td><td class="n">0x04</td><td>The board did not answer in time.</td><td>Error 1. No retry.</td></tr>
+<tr><td class="n">3</td><td class="n">0x08</td><td>Never set in the status byte: the bridge clears it before sending. In the status word it means a byte came from the boards when none was expected.</td><td>The game's code treats it as error 2 with one retry, in <code>node_send</code> <code>0x005aed0c</code>.</td></tr>
+<tr><td class="n">4</td><td class="n">0x10</td><td>The bridge has restarted since its status was last read.</td><td></td></tr>
+<tr><td class="n">5</td><td class="n">0x20</td><td>The bridge was sent a command it does not know.</td><td></td></tr>
+<tr><td class="n">6</td><td class="n">0x40</td><td>The game stopped in the middle of a frame.</td><td></td></tr>
+</tbody></table></div>
+<p>Bits other than bit 2 stay set until the status word is read with <code>05</code>. <span class="ev fw">firmware</span></p>
+</section>
+
+<section>
+<h2>What a board does with a message</h2>
+<dl class="feat">
+<dt>Address match</dt><dd>A board takes a message when the address is its own or 0. A broadcast is acted on only for <code>f0</code> and <code>f1</code>, and never answered.</dd>
+<dt>Checksum</dt><dd>A message whose bytes do not add up to 0 is dropped and fault bit 13 set. The board sends nothing, so the bridge reports a time-out.</dd>
+<dt>Message counter</dt><dd>The board counts messages addressed to itself, not broadcasts. The game keeps the same count at <code>0x0085545c + 4n</code>. The status reply (<code>ff</code>) returns the board's count and clears it; a count that differs from the game's makes the game treat the node as faulty.</dd>
+<dt>Two buffers</dt><dd>A board holds two messages at a time. A third while both are waiting sets fault bit 20; a message longer than 0x84 bytes sets fault bit 8.</dd>
+<dt>Unknown command</dt><dd>Sets fault bit 17. No reply.</dd>
+<dt>Gate on ordinary commands</dt><dd>On the game's side, commands below <code>0xf0</code> are sent only while a per-board word, <code>0x0071c220[addr] + 0x14</code>, is non-zero. <span class="ev code">game</span></dd>
+</dl>
+</section>
+
+<section>
+<h2>Scrambling</h2>
+<p>With bit 6 of the address byte set, the board descrambles the bytes after the length byte. Byte <code>n</code> of the frame (the address is byte 0) is XORed with two values:</p>
+<pre class="code">K = (address &amp; 15) &lt;&lt; 4 | (len &amp; 15)
+plain[n] = wire[n] ^ key[(n - 2) &amp; 15] ^ (n odd ? ~K : K)        ; n &gt;= 2</pre>
+<p>The key is 16 bytes held by the board and returned by command <code>fc</code>. The game keeps its copy in a table at <code>0x0085525c</code>, but the per-node enable byte <code>0x008550e7 + 12n</code> has no writer in this build, so ordinary traffic is never scrambled. The bit does appear on the page data of encrypted firmware images. <span class="ev fw">firmware</span> <span class="ev code">game</span></p>
+</section>
+
+<section>
+<h2>How long does a message take?</h2>
+<p>Ten bit times per byte on the game's side. The read-inputs exchange above is 5 bytes out and 12 back: 17 bytes, 0.37 ms of wire time, before the bridge's and the board's own turnaround. A write only queues the bytes in the tty; the caller waits when it reads the reply.</p>
+</section>
+</div>
+
+<!-- ================================================================ BRIDGE -->
+<div class="view" id="bridge" role="tabpanel" hidden>
+<section>
+<h1>The net bridge</h1>
+<p>The bridge is a small microcontroller on the CPU board at the other end of <code>/dev/ttymxc1</code>. Its firmware, <code>netbridge-0_5_0.hex</code>, sits unencrypted on the root file system under <code>/usr/local/spike</code>. It switches power to the boards, finds the board that wants service, carries every node message, and keeps a status word about all of it. Everything on this tab is read from that firmware. <span class="ev fw">firmware</span></p>
+</section>
+<section>
+<h2>Bridge commands</h2>
+<div class="tbl"><table><thead><tr><th>Cmd</th><th>Frame</th><th>Reply bytes</th><th>What the bridge does</th><th>Game function</th></tr></thead><tbody>
+<tr><td class="n">00</td><td class="n">00</td><td class="n">1</td><td>Poll. Replies the lowest address that wants service, or 0. See below.</td><td class="n">0x005af090</td></tr>
+<tr><td class="n">03</td><td class="n">03 00</td><td class="n">3</td><td>Version: <code>00 05 00</code>.</td><td class="n">0x005aedec</td></tr>
+<tr><td class="n">04</td><td class="n">04 01 on</td><td class="n">–</td><td>Boot hold. On: the bridge enables its line driver and sends a continuous break to the boards. Off: the break ends.</td><td class="n">0x005aef2c</td></tr>
+<tr><td class="n">05</td><td class="n">05 00</td><td class="n">4</td><td>Status word, low byte first. Reading clears it.</td><td class="n">0x005ae960</td></tr>
+<tr><td class="n">06</td><td class="n">06 02 lo hi</td><td class="n">–</td><td>Reply time for the next exchange: 2400 timer counts times the value. The default of 4800 returns afterwards.</td><td class="n">0x005b12f0</td></tr>
+<tr><td class="n">07</td><td class="n">07 01 on</td><td class="n">–</td><td>Node power (48 V) pin.</td><td class="n">0x005b46c4</td></tr>
+<tr><td class="n">08</td><td class="n">08 01 on</td><td class="n">–</td><td>Amplifier power pin.</td><td class="n">0x005b4688</td></tr>
+<tr><td class="n">09</td><td class="n">09 02 brightness fade</td><td class="n">–</td><td>Backbox lamp. The level moves to the new brightness by a step of <code>4096 / fade</code> per pass; fade 0 sets it at once.</td><td class="n">0x005b4648</td></tr>
+<tr><td class="n">0a</td><td class="n">0a 00</td><td class="n">2</td><td>State. Byte 0: bit 0 node power is on, bit 1 amplifier power is on, bit 2 the clock runs from the oscillator, bit 4 the PLL is locked. Byte 1: the backbox lamp's present level, 0-255.</td><td class="n">0x005aee70</td></tr>
+<tr><td class="n">0b</td><td class="n">0b 01 shift</td><td class="n">–</td><td>PWM period of the backbox lamp: <code>0xffff &gt;&gt; shift</code>. The game sends 6.</td><td class="n">0x005b460c</td></tr>
+<tr><td class="n">0c</td><td class="n">0c …</td><td class="n">–</td><td>The bridge stops and lets its watchdog restart it.</td><td class="n">0x005aec6c</td></tr>
+<tr><td class="n">0d</td><td class="n">0d 05 sub v(LE32)</td><td class="n">0 or 4</td><td>Key exchange with four 32-bit slots. <code>sub</code> low nibble 0: store <code>v</code> in slot <code>(sub &gt;&gt; 4) &amp; 3</code>. 1 to 4: reply four bytes, a hash of <code>v</code> and the slot; with bit 7 of <code>sub</code> the slot becomes slot XOR hash. None of the named functions of the game's node library sends it.</td><td class="n">–</td></tr>
+<tr><td class="n">01, 02, 0e…</td><td></td><td class="n">–</td><td>Unknown: status bit 5.</td><td></td></tr>
+</tbody></table></div>
+<p>The game reads bit 1 of the <code>0a</code> reply as "must be 1, or run the power-fault path" (<code>0x002e077c</code>). That bit is the amplifier power.</p>
+<p class="note">Times are in counts of the bridge's timer. On the clock path that uses the internal oscillator the main clock is 24 MHz, which would make the <code>06</code> unit 0.1 ms and the default reply time 0.2 ms. The frequency on the crystal path is not in the code. <span class="ev unk">unknown</span></p>
+</section>
+<section>
+<h2>The status word</h2>
+<div class="tbl"><table><thead><tr><th>Bit</th><th>Meaning</th></tr></thead><tbody>
+<tr><td class="n">0</td><td>Receive error on the port to the game.</td></tr>
+<tr><td class="n">2</td><td>A board did not answer in time. Cleared as soon as it has been reported in a status byte.</td></tr>
+<tr><td class="n">3</td><td>A byte came from the boards when none was expected.</td></tr>
+<tr><td class="n">4</td><td>The bridge has restarted.</td></tr>
+<tr><td class="n">5</td><td>Unknown bridge command.</td></tr>
+<tr><td class="n">6</td><td>The game stopped in the middle of a frame (2,400,000 counts without the next byte).</td></tr>
+<tr><td class="n">8, 9, 10, 11, 12</td><td>Why it restarted: power-on, reset pin, watchdog, brown-out, software.</td></tr>
+<tr><td class="n">13, 14, 15, 16</td><td>Port to the game: framing error, noise, overrun, break.</td></tr>
+<tr><td class="n">17, 18, 19, 20</td><td>Port to the boards: the same four.</td></tr>
+</tbody></table></div>
+<p>The game treats any bit of <code>0x1f10</code> as a fault. That mask is exactly "restarted" plus the five reset causes: the game is told that the bridge, and with it the node power, went away under it.</p>
+</section>
+<section>
+<h2>Poll and service</h2>
+<p>The nodebus thread sends the single byte <code>00</code> again and again. The answer is one byte.</p>
+<div class="duo">
+<div class="card"><span class="lab">Nothing to report</span><div class="dir">game →</div><div class="bytes" data-b="00=cmd=poll"></div><div class="dir">← bridge</div><div class="bytes" data-b="00=data=no board"></div></div>
+<div class="card"><span class="lab">Node 8 has a changed input</span><div class="dir">game →</div><div class="bytes" data-b="00=cmd=poll"></div><div class="dir">← bridge</div><div class="bytes" data-b="08=data=address"></div><p>The game then sends <code>11</code> to node 8. Reading the inputs clears the request.</p></div>
+</div>
+<p>Behind that one byte the bridge runs a binary search. It sends a probe: an address-marked byte with bit 7 clear and a number in it. Every board whose address is not above that number, and which wants service, answers with one byte <code>ff</code> at once. The bridge only listens for whether anything came back, 0x479 counts per probe, and halves the range. Five probes at most find the lowest waiting address among 31.</p>
+<p>A board answers a probe only while two of its traffic flags are set: the service request and "may answer polls". See <a href="#inputs">Inputs</a>.</p>
+</section>
+<section>
+<h2>Power and the boot line</h2>
+<p>Node power and amplifier power are two pins. Turning node power on starts every board.</p>
+<p>The boot hold is a break: the bridge holds the bus in the break state for as long as the hold is on. The updater uses it to get one board into its boot loader: it resets the board with <code>f1</code>, turns the hold on, waits 1.25 s and turns it off. That a board's boot loader stays put when it finds the line in break is inferred from this sequence; the boot loader itself is not in any update file. <span class="ev unk">unknown</span></p>
+</section>
+</div>
+
+<!-- ================================================================ COMMANDS -->
+<div class="view" id="commands" role="tabpanel" hidden>
+<section>
+<h1>Every node command</h1>
+<p>One row per command. The game's node library has one builder function per command; it is not title code and sits at <code>0x005ad920</code>-<code>0x005b5538</code> in Godzilla and at <code>0x005c3c10</code>-<code>0x005cb8e0</code> in D&amp;D. The board side is a handler in the firmware, found through a table indexed by the command's high nibble.</p>
+<p>Layouts show the command byte and its arguments, without the frame around them. "Reply" is the number of data bytes, without checksum and status. "Boards" names the firmware whose handler was read; "all three" means the handler exists in pinnode, ws2812node and tmc5041node and was read in pinnode.</p>
+<div class="pills"><input type="text" id="cmd-q" placeholder="filter: 41, stepper, ws2812…" aria-label="Filter commands">
+<button type="button" data-cg="all" aria-pressed="true">All</button><button type="button" data-cg="known" aria-pressed="false">Decoded</button><button type="button" data-cg="named" aria-pressed="false">Not decoded</button></div>
+<div class="tbl"><table id="cmd-table"><thead><tr><th>Cmd</th><th>Layout</th><th>Reply</th><th>What the board does</th><th>Boards</th><th>Game builder</th></tr></thead><tbody></tbody></table></div>
+<p class="note">"Not decoded": the game has a builder for the byte, but no handler for it was read, either because the boards that take it were not studied (tmc2590node, hdminode, magsensornode, lcdnode) or because the handler was not followed to the end.</p>
+</section>
+
+<section>
+<h2>Which board takes which command?</h2>
+<p>From the handler tables of the 1.37.0 images. A board has a handler for a whole group of sixteen commands or none. <span class="ev fw">firmware</span></p>
+<div class="tbl"><table><thead><tr><th>Image</th><th>Image id</th><th>Ticks/s</th><th>Command groups handled</th></tr></thead><tbody>
+<tr><td class="n">pinnode-LPC1313</td><td class="n">1</td><td class="n">1280</td><td class="n">1x 2x 3x 4x 5x 6x 7x 8x-bx cx dx fx</td></tr>
+<tr><td class="n">pinnode-LPC1112</td><td class="n">1</td><td class="n">1280</td><td class="n">1x 2x 4x 6x 7x 8x-bx fx</td></tr>
+<tr><td class="n">coil4node-LPC1313</td><td class="n">4</td><td class="n">1280</td><td class="n">1x 2x 3x 4x 5x 6x 7x 8x-bx cx fx (eight drivers)</td></tr>
+<tr><td class="n">ws2812node-LPC1313</td><td class="n">5</td><td class="n">60</td><td class="n">1x 2x 4x 6x 7x 8x-bx cx fx</td></tr>
+<tr><td class="n">tmc2590node-LPC1313</td><td class="n">10</td><td class="n">1280</td><td class="n">1x 2x 3x 4x 6x 7x 8x-bx cx fx</td></tr>
+<tr><td class="n">hdminode-LPC1313</td><td class="n">11</td><td class="n">1280</td><td class="n">1x 2x 4x 6x 7x 8x-bx cx dx fx</td></tr>
+<tr><td class="n">hdmi_ws2812node-LPC1313</td><td class="n">12</td><td class="n">60</td><td class="n">as ws2812node</td></tr>
+<tr><td class="n">tmc5041node-LPC1313</td><td class="n">13</td><td class="n">1280</td><td class="n">1x 2x 3x 4x 6x 7x 8x-bx cx fx</td></tr>
+<tr><td class="n">ws2812pinnode-LPC1313</td><td class="n">14</td><td class="n">60</td><td class="n">as ws2812node</td></tr>
+<tr><td class="n">magsensornode-LPC812</td><td class="n">15</td><td class="n">2000</td><td class="n">1x 2x 4x 5x 6x 7x 8x-bx cx fx</td></tr>
+<tr><td class="n">coil4_lednode-LPC1313</td><td class="n">16</td><td class="n">1280</td><td class="n">as coil4node</td></tr>
+<tr><td class="n">lcdnode-LPC1113</td><td class="n">2</td><td class="n">not read</td><td>Tables not located.</td></tr>
+<tr><td class="n">node4</td><td class="n">3</td><td class="n">not read</td><td>The image is sent encrypted; no plain copy.</td></tr>
+</tbody></table></div>
+<p>A handler for a group does not mean every command in it does something. ws2812node, which has no drivers, has a <code>4x</code> handler that accepts every command and does nothing.</p>
+</section>
+
+<section>
+<h2>Identity and status replies</h2>
+<h3>fe: version, 11 bytes</h3>
+<div class="bytes" data-b="00=data=flag;01=data=version a;25=data=version b: 37;00=data=version c;..=data=MCU part id, LE32;..=data= ;..=data= ;..=data= ;00=data=tick rate, LE16;05=data=0x0500 = 1280;01=data=image id"></div>
+<ul>
+<li>Version, tick rate and image id are constants in the firmware (<code>0x2ad0</code>). pinnode 1.37.0 sends <code>01 25 00</code>, <code>00 05</code> and <code>01</code>. <span class="ev fw">firmware</span></li>
+<li>The flag is a RAM byte in the application. The game reads bit 7 as "boot loader running" (<code>0x002ddf00</code>).</li>
+<li>The version and image id must equal the header of the board's image file, or the game re-programs the board. <span class="ev code">game</span></li>
+<li>The MCU part id selects a row of the game's MCU table (<code>0x006adb4c</code>), and with it the firmware family that is part of the image file name.</li>
+<li>A tick rate of zero disables every timed command on the game's side and makes it ask for the version again before each one.</li>
+<li>The game also accepts a 10-byte form without the image id, and then asks for it with <code>fa 01</code>.</li>
+</ul>
+<h3>ff: status, 8 bytes</h3>
+<div class="bytes" data-b="2a=data=messages since last status, LE32;00=data= ;00=data= ;00=data= ;00=data=fault word, LE32;00=data= ;00=data= ;00=data= "></div>
+<p>Both values are cleared by the read (<code>0x29b8</code>). The fault word, as far as the application sets it: <span class="ev fw">firmware</span></p>
+<div class="tbl"><table><thead><tr><th>Bit</th><th>Set when</th></tr></thead><tbody>
+<tr><td class="n">0, 1, 2, 3</td><td>Why the board last restarted: power-on, reset pin or software, watchdog, brown-out. Copied once at start.</td></tr>
+<tr><td class="n">4, 5, 6</td><td>Receive overrun, framing error, break.</td></tr>
+<tr><td class="n">7</td><td>At the status request, when a RAM word of the board is zero. Which word was not followed. The LED self-test reads this bit as "fault on the channel just pulsed".</td></tr>
+<tr><td class="n">8</td><td>A message longer than 0x84 bytes.</td></tr>
+<tr><td class="n">13</td><td>A message with a wrong checksum.</td></tr>
+<tr><td class="n">15</td><td>A pass of the main loop in which the driver or lamp service reported failure.</td></tr>
+<tr><td class="n">16</td><td>A countdown in the driver service ran out. Which one was not traced.</td></tr>
+<tr><td class="n">17</td><td>Unknown command.</td></tr>
+<tr><td class="n">18</td><td>The main loop overran a tick.</td></tr>
+<tr><td class="n">19</td><td>At the status request, when the input scan has no valid image yet.</td></tr>
+<tr><td class="n">20</td><td>A third message arrived while two were waiting.</td></tr>
+</tbody></table></div>
+<p>The game tests the mask <code>0x8010211f</code> for faults and bit 19 for "inputs not valid". A reset command therefore shows up as a fault in the next status: after <code>f1</code> the board restarts by watchdog and reports bit 2. <span class="ev code">game</span></p>
+<h3>f9, fd: the board's manufacturing record</h3>
+<p>The record is 32 bytes of flash at <code>0x200</code>, inside the boot loader's part of memory. The application only passes it on (<code>0x2bc0</code>, <code>0x2b28</code>). <span class="ev fw">firmware</span></p>
+<div class="tbl"><table><thead><tr><th>Request</th><th>Reply</th><th>Content</th></tr></thead><tbody>
+<tr><td class="n">f9 00</td><td class="n">16</td><td>Bytes 0-3: four bytes from RAM. Bytes 4-15: flash <code>0x204</code>-<code>0x20f</code>. Bytes 8-11 are the board part number as an integer, LE32: <code>520-5319-00</code> is 520531900. The game prints it with <code>%09d</code> and compares it with its board-type table; with 0 the attract screen shows "Game validation error, Update SD card".</td></tr>
+<tr><td class="n">f9 01</td><td class="n">16</td><td>Flash <code>0x210</code>-<code>0x21f</code>. The game reads bytes 0-3 and 4-7 as two time stamps and shows them as dates in the service menu.</td></tr>
+<tr><td class="n">fd</td><td class="n">12</td><td>Flash <code>0x200</code>-<code>0x20b</code>: the first eight bytes, which the game treats as the serial number, then the part number again.</td></tr>
+</tbody></table></div>
+<p class="note">What a real board holds in these 32 bytes beyond the part number and the two dates was not seen. <span class="ev unk">unknown</span></p>
+</section>
+</div>
+
+<!-- ================================================================ INPUTS -->
+<div class="view" id="inputs" role="tabpanel" hidden>
+<section>
+<h1>Switches and other inputs</h1>
+<p>A node board has up to 64 inputs, sent as 8 bytes. Input <code>n</code> is bit <code>n &amp; 7</code> of byte <code>n &gt;&gt; 3</code>. A bit of 1 means the input is open. Inside the board the inputs are four 16-bit words, and wherever a command names an input it is as <code>0x40 | input</code>: bit 6 says "there is an input", bits 4-5 the word, bits 0-3 the bit.</p>
+</section>
+<section>
+<h2>Reading them: command 11</h2>
+<div class="dir">game → node</div>
+<div class="bytes" data-b="11=cmd=read inputs"></div>
+<div class="dir">node → game, 10 data bytes</div>
+<div class="bytes" data-b="ff=data=inputs 0-7;f7=data=8-15: input 11 closed;ff=data=16-23;ff=data=24-31;ff=data=32-39;ff=data=40-47;ff=data=48-55;ff=data=56-63;40=data=age of the last change, LE16;01=data=320 ticks; bit 15 clear"></div>
+<p>The first eight bytes are the debounced inputs with the masked ones forced to 0. The last two are a 16-bit word: bits 0-14 count the ticks since the last input change, stopping at 0x7fff, and bit 15 is set when the service request flag is clear. Reading clears the request; an input that changes again sets it again. <span class="ev fw">firmware</span></p>
+<div class="tbl"><table><thead><tr><th>Cmd</th><th>Reply</th><th>Difference</th></tr></thead><tbody>
+<tr><td class="n">11</td><td class="n">10</td><td>The debounced inputs. This is the one the game uses (<code>0x005af194</code>).</td></tr>
+<tr><td class="n">11 x</td><td class="n">10</td><td>The same, with input byte <code>i</code> XORed with <code>x</code> rotated left by <code>i</code>.</td></tr>
+<tr><td class="n">10</td><td class="n">10</td><td>The raw inputs, before debounce.</td></tr>
+<tr><td class="n">12</td><td class="n">8</td><td>The service mask set with <code>71</code>.</td></tr>
+<tr><td class="n">13 [n]</td><td class="n">2n</td><td>The LED fault mask of <code>72</code>, <code>n</code> words (4 if not given).</td></tr>
+<tr><td class="n">14 leds(LE16) inputs(LE16)</td><td class="n">–</td><td>How many LED channels and inputs the board should scan, at most 96 and 64.</td></tr>
+</tbody></table></div>
+</section>
+<section>
+<h2>How the game hears about a change: f0 and 71</h2>
+<p>The game does not read every board on every pass. A board has two traffic flags, and it answers the bridge's poll only while both are set.</p>
+<div class="tbl"><table><thead><tr><th>Flag bit</th><th>Meaning</th><th>Set by</th><th>Cleared by</th></tr></thead><tbody>
+<tr><td class="n">0</td><td>Service request.</td><td>A change of an input that is in the service mask; <code>f0 11</code>.</td><td>Reading the inputs with <code>10</code> or <code>11</code>; <code>f0 10</code>.</td></tr>
+<tr><td class="n">1</td><td>May answer polls.</td><td>The firmware itself at start; <code>f0 22</code>.</td><td><code>f0 20</code>.</td></tr>
+</tbody></table></div>
+<p>The argument of <code>f0</code> is two nibbles: the high nibble is a mask of the flags to write and the low nibble their new values (<code>0x2c08</code>). So <code>f0 11</code> raises a request by hand, <code>f0 10</code> withdraws it, and <code>f0 33</code> sets both flags. The game's library has senders for <code>f0 11</code> (<code>0x005b10e0</code>), <code>f0 10</code> (<code>0x005b1128</code>) and one with the byte as an argument (<code>0x005b1170</code>). <span class="ev fw">firmware</span></p>
+<p>Which inputs raise a request is the service mask: <code>71 w0 w1 w2 w3</code>, four 16-bit words, one bit per input.</p>
+</section>
+<section>
+<h2>From a bit to a switch</h2>
+<p>Switch number <code>n</code> is the n-th entry of kind 1 in the game's I/O table. The entry names the board and the bit. A second record, 40 bytes at <code>0x00776b00 + 40n</code>, holds the switch definition.</p>
+<pre class="code">active = input_bit XOR NOT(definition_flags &amp; 4)        ; 0x00378914</pre>
+<p>So a switch without flag 4 is active when its bit is 0. In Godzilla that is every physical switch: leaf, micro and opto alike. Only four virtual switches are active-high. <span class="ev code">game</span> <span class="ev xref">cross-check</span></p>
+<h3>Debounce: command 70</h3>
+<p><code>70 input on off</code> sets the two debounce times of one input in ticks, one byte each; a zero is taken as 1 (<code>0x3210</code>). The game calls it from <code>0x0037939c</code> with settings such as 6 ms and 1 ms, which are 8 ticks and 1 tick at 1280 ticks per second.</p>
+<h3>Inputs the board drives itself</h3>
+<p>Not every input is a wire. A driver rule can name an input number that the board sets while the rule's coil is on, and the game reads it like any switch. See <a href="#drivers">Drivers</a>, bytes 34 and 35 of the rule.</p>
+</section>
+<section>
+<h2>The CPU board's own switches</h2>
+<p>Service buttons, DIP switches and the coin door are wired to the CPU board and never cross the node bus. The cpuspi thread at <code>0x005b9cc0</code> opens <code>/dev/spidev1.0</code>, sets 100 kHz and SPI mode 3, and runs full-duplex 8-byte transfers in a tight loop. <span class="ev code">game</span> <span class="ev xref">cross-check</span></p>
+<div class="tbl"><table><thead><tr><th>Direction</th><th>Bytes</th><th>Content</th><th>Guest buffer</th></tr></thead><tbody>
+<tr><td>out</td><td class="n">8</td><td>Output image of the CPU board. Bit meanings not looked at.</td><td class="n">0x0085581c</td></tr>
+<tr><td>in</td><td class="n">8</td><td>64 inputs, same layout and polarity as a node board: bit set = open.</td><td class="n">0x008557d8</td></tr>
+</tbody></table></div>
+<p>The I/O table calls these switches node 0.</p>
+</section>
+</div>
+
+<!-- ================================================================ DRIVERS -->
+<div class="view" id="drivers" role="tabpanel" hidden>
+<section>
+<h1>Coils and motors</h1>
+<p>A driver is a high-current output of a board: a coil, a motor, a flasher. A pinnode has nine, index 0 to 8; a coil4node eight. Durations are in board ticks, 1280 per second, so 1 ms is 1.28 ticks. A power byte <code>v</code> means <code>(v + 1) / 256</code> of full power, and 0 means off. Everything on this tab is from the pinnode firmware, handler <code>0x3498</code> and service routine <code>0x1ddc</code>, unless tagged otherwise. <span class="ev fw">firmware</span></p>
+</section>
+<section>
+<h2>40: fire a driver once</h2>
+<div class="bytes" data-b="40=cmd=pulse;01=arg=driver;e1=arg=power;52=arg=pulse time, LE16;00=arg=82 ticks = 64 ms;00=arg=hold power;00=arg=hold time, LE16;00=arg= ;00=arg=ramp, LE16;00=arg= "></div>
+<div class="tbl"><table><thead><tr><th>Byte</th><th>Field</th><th>Meaning</th></tr></thead><tbody>
+<tr><td class="n">1</td><td>driver</td><td>Index. Above the board's last driver the command is ignored.</td></tr>
+<tr><td class="n">2</td><td>power</td><td>Power during the pulse.</td></tr>
+<tr><td class="n">3-4</td><td>pulse time</td><td>Ticks.</td></tr>
+<tr><td class="n">5</td><td>hold power</td><td>Power after the pulse.</td></tr>
+<tr><td class="n">6-7</td><td>hold time</td><td>Ticks at hold power.</td></tr>
+<tr><td class="n">8-9</td><td>ramp</td><td>0: full power from the first tick. Otherwise the power climbs by <code>ramp / 256</code> per tick until it reaches the power byte.</td></tr>
+<tr><td class="n">10-11</td><td>delay</td><td>Optional. Ticks before the pulse begins.</td></tr>
+<tr><td class="n">12</td><td>stop input</td><td>Optional. <code>0x40 | input</code>.</td></tr>
+<tr><td class="n">13-14</td><td>run-on</td><td>Optional. When the stop input becomes active the pulse is cut to this many ticks and the hold dropped.</td></tr>
+</tbody></table></div>
+<p>The short form <code>40 idx</code> fires the driver by the rule stored with <code>41</code>, and only when its lockout has run out. A new <code>40</code> is refused while an earlier pulse or hold on that driver is still running, unless it has power 0.</p>
+<div class="tbl"><table><thead><tr><th>Seen from the game</th><th>Bytes</th><th>Reading</th></tr></thead><tbody>
+<tr><td>D&amp;D diverter</td><td class="w">40 00 80 40 00 48 40 1f</td><td>Driver 0: power 0x80 for 64 ticks, then power 0x48 for 0x1f40 = 8000 ticks.</td></tr>
+<tr><td>Coin meter</td><td class="w">40 02 ff 50 00 ff 00 00</td><td>Driver 2: full power for 80 ticks; hold power given, hold time 0.</td></tr>
+<tr><td>Node init self-test</td><td class="w">40 idx … 01 00 …</td><td>Every driver once, 1 tick.</td></tr>
+</tbody></table></div>
+<p class="note">These captures were taken when the simulator still reported 1000 ticks per second, so their tick counts equal milliseconds. With the firmware's 1280 the game sends 1.28 times as many: the trough eject of 64 ms goes out as <code>40 01 e0 51 00 …</code>, 81 ticks. <span class="ev meas">measured</span></p>
+</section>
+<section>
+<h2>41: a rule the board runs by itself</h2>
+<p>With <code>41</code> the game hands the board a rule: when this input becomes active, fire this driver like so. The message is 48 bytes from Godzilla's library and 49 from D&amp;D's. <code>41 idx</code> alone clears the rule. Builder <code>node_driver_rule_41</code> <code>0x005b346c</code>.</p>
+<div class="tbl"><table><thead><tr><th>Byte</th><th>Field</th><th>Meaning</th></tr></thead><tbody>
+<tr><td class="n">1</td><td>driver</td><td></td></tr>
+<tr><td class="n">2</td><td>power</td><td>Power of the pulse.</td></tr>
+<tr><td class="n">3-4</td><td>pulse time</td><td>Ticks.</td></tr>
+<tr><td class="n">5</td><td>hold power</td><td></td></tr>
+<tr><td class="n">6-7</td><td>hold time</td><td>Ticks.</td></tr>
+<tr><td class="n">8-9</td><td>ramp</td><td>As in <code>40</code>.</td></tr>
+<tr><td class="n">10-11</td><td>start delay</td><td>Ticks between the trigger and the pulse.</td></tr>
+<tr><td class="n">12-13</td><td>lockout</td><td>Ticks after a firing during which the rule cannot fire again.</td></tr>
+<tr><td class="n">14-15</td><td>burst window</td><td>When this time passes without a firing, the burst budget (byte 47) is refilled.</td></tr>
+<tr><td class="n">16-17</td><td>run-on</td><td>When a stop input becomes active the pulse is cut to this many ticks and the hold dropped.</td></tr>
+<tr><td class="n">18-19</td><td>inhibit time A</td><td>Lockout applied when inhibit input A becomes active.</td></tr>
+<tr><td class="n">20-21</td><td>inhibit time B</td><td>The same for inhibit input B.</td></tr>
+<tr><td class="n">22-23</td><td>hit window</td><td>Time within which the hits of byte 43 must arrive.</td></tr>
+<tr><td class="n">24, 25, 26</td><td>trigger inputs 1-3</td><td>The rule fires when any trigger becomes active.</td></tr>
+<tr><td class="n">27</td><td>end-of-stroke input</td><td>While it is active during the pulse, the pulse is cut to byte 46 ticks and the hold begins. If it opens again during the hold, the pulse is repeated, byte 45 times at most.</td></tr>
+<tr><td class="n">28</td><td>stop input 1</td><td></td></tr>
+<tr><td class="n">29</td><td>inhibit input A</td><td></td></tr>
+<tr><td class="n">30, 31</td><td>trigger inputs 4, 5</td><td></td></tr>
+<tr><td class="n">32</td><td>stop input 2</td><td></td></tr>
+<tr><td class="n">33</td><td>inhibit input B</td><td></td></tr>
+<tr><td class="n">34</td><td>"fired" output</td><td>An input number the board itself drives: set when the rule fires, cleared when the driver stops.</td></tr>
+<tr><td class="n">35</td><td>"locked out" output</td><td>An input number the board drives while the lockout runs.</td></tr>
+<tr><td class="n">36, 37, 38</td><td>qualifiers for triggers 1-3</td><td>See below.</td></tr>
+<tr><td class="n">39</td><td>qualifier for inhibit A</td><td></td></tr>
+<tr><td class="n">40, 41</td><td>qualifiers for triggers 4, 5</td><td></td></tr>
+<tr><td class="n">42</td><td>qualifier for inhibit B</td><td></td></tr>
+<tr><td class="n">43</td><td>extra hits</td><td>The rule fires on hit number <code>n + 1</code> inside the hit window.</td></tr>
+<tr><td class="n">44</td><td>firings left</td><td>Counts down per firing; after the last one the rule's triggers are removed.</td></tr>
+<tr><td class="n">45</td><td>re-pulses</td><td>End-of-stroke re-pulses allowed per firing.</td></tr>
+<tr><td class="n">46</td><td>end-of-stroke tail</td><td>Pulse ticks left to run once end-of-stroke is reached.</td></tr>
+<tr><td class="n">47</td><td>burst budget</td><td>Firings allowed per burst window. 0 means 255.</td></tr>
+<tr><td class="n">48</td><td>linked driver</td><td>D&amp;D's library only. When this rule fires, that driver's lockout is cut to 25 ticks.</td></tr>
+</tbody></table></div>
+<h3>Qualifiers</h3>
+<p>A qualifier byte makes its input count only while another driver is in a given state. It is what lets one flipper button behave differently while a second coil is energised.</p>
+<div class="tbl"><table class="bits"><thead><tr><th>bits 7-4</th><th>bits 3-1</th><th>bit 0</th></tr></thead><tbody>
+<tr><td>driver index</td><td>state to test</td><td>invert</td></tr></tbody></table></div>
+<div class="tbl"><table><thead><tr><th>State</th><th>The other driver…</th></tr></thead><tbody>
+<tr><td class="n">0</td><td>No condition.</td></tr>
+<tr><td class="n">1</td><td>is in its pulse or its hold.</td></tr>
+<tr><td class="n">2</td><td>is in its pulse.</td></tr>
+<tr><td class="n">3</td><td>is in its hold.</td></tr>
+<tr><td class="n">4</td><td>has its lockout running.</td></tr>
+<tr><td class="n">5</td><td>has its start delay running.</td></tr>
+</tbody></table></div>
+<h3>Rules the game was seen to send</h3>
+<div class="tbl"><table><thead><tr><th>Seen</th><th>Bytes</th><th>Reading</th></tr></thead><tbody>
+<tr><td>Flipper</td><td class="w">41 05 f0 28 00 1e 20 … [24]=59 [27]=50</td><td>Driver 5: power 0xf0 for 40 ticks, hold power 0x1e. Trigger input 25, end-of-stroke input 16.</td></tr>
+<tr><td>Slingshot</td><td class="w">41 02 ff 18 … [24]=5d</td><td>Driver 2: full power for 24 ticks, trigger input 29.</td></tr>
+<tr><td>Shield motor</td><td class="w">41 02 64 10 27 … [28]=56</td><td>Driver 2: power 0x64 for up to 10000 ticks, stops at input 22. Started with <code>40 02</code>.</td></tr>
+</tbody></table></div>
+</section>
+<section>
+<h2>The other driver commands</h2>
+<div class="tbl"><table><thead><tr><th>Bytes</th><th>Reply</th><th>Meaning</th><th>Game builder</th></tr></thead><tbody>
+<tr><td class="w">4d idx</td><td class="n">–</td><td>Driver off.</td><td class="n">0x005afb28</td></tr>
+<tr><td class="w">4c idx brightness fade</td><td class="n">–</td><td>Use a driver output as a lamp.</td><td class="n">0x005afa74</td></tr>
+<tr><td class="w">42 v(LE32) [which [period(LE16)]]</td><td class="n">–</td><td>Writes a match value into one or both PWM timers, and with the longer form the timer period.</td><td class="n">0x005b43f4</td></tr>
+<tr><td class="w">43 n</td><td class="n">n + 1</td><td>Reads the service order: how many drivers may be in their pulse at once, then the first <code>n</code> drivers in order.</td><td class="n">–</td></tr>
+<tr><td class="w">43 n o0 … o8</td><td class="n">1</td><td>Sets that number (1-9) and the order of the nine drivers. Reply 0 accepted, 0xff refused.</td><td class="n">–</td></tr>
+<tr><td class="w">44 0/1</td><td class="n">–</td><td>Fault detection off / on.</td><td class="n">0x005af81c</td></tr>
+<tr><td class="w">45 idx count(LE16) x</td><td class="n">–</td><td>Sends <code>count</code> bits out of one driver pin, each held <code>x + 1</code> ticks.</td><td class="n">–</td></tr>
+<tr><td class="w">46 mask(LE16)</td><td class="n">–</td><td>Drivers left out of fault detection.</td><td class="n">0x005af9c4</td></tr>
+<tr><td class="w">47</td><td class="n">2</td><td>That mask as it now stands.</td><td class="n">0x005afa1c</td></tr>
+<tr><td class="w">48 ticks(LE16)</td><td class="n">–</td><td>Fault detection time. The game sends 5 ms while testing and 100 ms in use.</td><td class="n">0x005b33e4</td></tr>
+<tr><td class="w">49, 4a, 4b</td><td class="n">–</td><td>Accepted, no effect in pinnode.</td><td class="n">0x005af944 (4a)</td></tr>
+</tbody></table></div>
+<p>The limit of drivers in their pulse at once is why the order matters: with more triggers than the limit, the drivers first in the order get their pulse first and the others wait their turn.</p>
+</section>
+<section>
+<h2>Motors with position switches: 50 to 5b</h2>
+<p>pinnode and coil4node can run up to eight small motors, each a driver output with two position inputs and, optionally, a two-input counter. Neither Godzilla nor D&amp;D was seen to use these commands, and the handlers were read only as far as the table shows. <span class="ev fw">firmware</span></p>
+<div class="tbl"><table><thead><tr><th>Bytes</th><th>Reply</th><th>Meaning</th></tr></thead><tbody>
+<tr><td class="w">51 ch cfg[17]</td><td class="n">–</td><td>Set-up and stop. Of <code>cfg</code>: byte 0 position input A, byte 1 position input B, bytes 3 and 4 the two counter inputs, byte 6 the driver. The rest was not followed.</td></tr>
+<tr><td class="w">57 ch cfg[17]</td><td class="n">–</td><td>The same without stopping the motor. <code>59</code> and <code>5a</code> are variants that also zero the driver.</td></tr>
+<tr><td class="w">52 ch</td><td class="n">4</td><td>LE16 position figure, LE16 status. Status bit 3: at position A; bit 4: at position B.</td></tr>
+<tr><td class="w">53 ch dir power x(LE16)</td><td class="n">–</td><td>Run until position input A is active.</td></tr>
+<tr><td class="w">54 ch dir power x(LE16)</td><td class="n">–</td><td>Run until position input B is active.</td></tr>
+<tr><td class="w">55 ch pos(LE16 s) a x(LE16) b</td><td class="n">–</td><td>Run to a counter position.</td></tr>
+<tr><td class="w">56 ch</td><td class="n">–</td><td>Stop.</td></tr>
+<tr><td class="w">58 ch x(LE16) power flags</td><td class="n">–</td><td>Timed run; bit 2 of <code>flags</code> is the direction.</td></tr>
+<tr><td class="w">50, 5b</td><td class="n">–</td><td>Handlers exist; not followed. <span class="ev unk">unknown</span></td></tr>
+</tbody></table></div>
+</section>
+</div>
+
+<!-- ================================================================ STEPPERS -->
+<div class="view" id="steppers" role="tabpanel" hidden>
+<section>
+<h1>Steppers</h1>
+<p>The stepper board, tmc5041node, carries three TMC5041 chips with two motors each, so six motors, index 0 to 5 (motor = chip × 2 + channel). The firmware does little more than translate: a move becomes a handful of register writes and the chip runs the ramp. One step of the protocol is 256 microsteps of the chip. Everything here is from <code>tmc5041node-LPC1313</code>, handler <code>0x1968</code>. <span class="ev fw">firmware</span></p>
+<p class="note">pinnode has a <code>3x</code> handler of its own for up to five motors stepped in software, with a shorter <code>31</code> (13 bytes) and <code>32</code> (11 bytes). Godzilla and D&amp;D use the tmc5041node forms below.</p>
+</section>
+<section>
+<h2>32: set-up, 19 bytes</h2>
+<div class="bytes" data-b="32=cmd=set-up;00=arg=motor;00=arg=keep position;3a=arg=home distance, LE16;20=arg=8250 steps;41=arg=limit: motor 0, side 1;40=arg=limit: motor 0, side 0;88=arg=run current 17/32;00=arg=hold current;58=arg=home speed, LE32;02=arg=600;00=arg= ;00=arg= ;0a=arg=stall threshold;64=arg=LE16: 100;00=arg= ;7d=arg=LE16: 125;00=arg= ;00=arg=replace moves"></div>
+<div class="tbl"><table><thead><tr><th>Byte</th><th>Field</th><th>Meaning</th></tr></thead><tbody>
+<tr><td class="n">1</td><td>motor</td><td>0 to 5.</td></tr>
+<tr><td class="n">2</td><td>keep position</td><td>Non-zero: the board reads the chip's position back before a home move instead of starting from zero.</td></tr>
+<tr><td class="n">3-4</td><td>home distance</td><td>Steps a home move travels at most.</td></tr>
+<tr><td class="n">5, 6</td><td>limit inputs</td><td><code>0x40 | (motor &lt;&lt; 1 | side)</code>: the chip's two reference inputs. A byte that names another motor is ignored. In Godzilla these are BUILDING DOWN and BUILDING UP.</td></tr>
+<tr><td class="n">7</td><td>run current</td><td>The value divided by 8 is the chip's 5-bit IRUN.</td></tr>
+<tr><td class="n">8</td><td>hold current</td><td>The same for IHOLD.</td></tr>
+<tr><td class="n">9-12</td><td>home speed</td><td>Used by command <code>34</code>.</td></tr>
+<tr><td class="n">13</td><td>stall threshold</td><td>Signed, clamped to -64..63: the chip's stallGuard threshold.</td></tr>
+<tr><td class="n">14-15</td><td></td><td>Scaled into the chip's TZEROWAIT.</td></tr>
+<tr><td class="n">16-17</td><td></td><td>Scaled into the chip's IHOLDDELAY.</td></tr>
+<tr><td class="n">18</td><td>replace moves</td><td>Non-zero: a new move may replace one that is still running. Zero: it is refused.</td></tr>
+</tbody></table></div>
+<p>Builder <code>node_stepper_setup_32</code> <code>0x005b3ec0</code>. The example is what Godzilla sends to node 10. After every set-up the game takes the motor to be at home without commanding a move (<code>0x001d7420</code>). <span class="ev code">game</span></p>
+</section>
+<section>
+<h2>31: relative move, 18 bytes</h2>
+<div class="bytes" data-b="31=cmd=move;00=arg=motor;6a=arg=distance, LE16 signed;ff=arg=−150 steps;14=arg=top speed, LE32;05=arg=1300;00=arg= ;00=arg= ;..=arg=acceleration, LE32;..=arg= ;..=arg= ;..=arg= ;..=arg=deceleration, LE32;..=arg= ;..=arg= ;..=arg= ;..=arg=LE16, not used;..=arg= "></div>
+<p>The board sets the chip's target to the present position plus <code>distance × 256</code>, the top speed, and the two ramps (<code>0x31b4</code>). The first half of each ramp uses the same acceleration as the second, the start speed is 0 and the stop speed 10. The last 16-bit field is read and not used by this firmware. Speeds and accelerations are multiplied by board constants before they reach the chip; those factors were not worked out. Builder <code>node_stepper_move_31</code> <code>0x005b404c</code>.</p>
+</section>
+<section>
+<h2>The other stepper commands</h2>
+<div class="tbl"><table><thead><tr><th>Bytes</th><th>Reply</th><th>Meaning</th><th>Game builder</th></tr></thead><tbody>
+<tr><td class="w">30</td><td class="n">1</td><td>Bitmap of the motors that are moving.</td><td class="n">0x005af5a8</td></tr>
+<tr><td class="w">33 motor</td><td class="n">–</td><td>Stop a moving motor.</td><td class="n">0x005af2c4</td></tr>
+<tr><td class="w">34 motor dir</td><td class="n">–</td><td>Home: a move of the home distance at the home speed, towards the positive side when <code>dir</code> is 0. The game was seen to send <code>34 motor 00</code> continually while the motor idles.</td><td class="n">0x005af31c</td></tr>
+<tr><td class="w">35 …</td><td class="n">–</td><td>Accepted, no effect in tmc5041node. In pinnode it adds or removes a stop position.</td><td class="n">–</td></tr>
+<tr><td class="w">36 v</td><td class="n">–</td><td>Output stage. <code>36 00</code> switches the motor drivers on; <code>36 18</code>, or any other value, off. The game sends 0x18 at start-up and 0x00 later.</td><td class="n">0x005af3c8</td></tr>
+<tr><td class="w">37</td><td class="n">1</td><td>A flags byte of the board.</td><td class="n">0x005af4c0</td></tr>
+<tr><td class="w">37 chip</td><td class="n">4</td><td>Two status registers of one chip packed in a word.</td><td class="n"></td></tr>
+<tr><td class="w">37 chip reg</td><td class="n">4</td><td>The board's copy of TMC register <code>reg</code> of that chip.</td><td class="n"></td></tr>
+<tr><td class="w">38 + motor</td><td class="n">5</td><td>Status, below.</td><td class="n">0x005af5f0</td></tr>
+</tbody></table></div>
+<h3>38 + motor: status, 5 bytes</h3>
+<div class="bytes" data-b="..=data=LE16;..=data= ;..=data=progress, LE16;..=data= ;01=data=flags"></div>
+<div class="tbl"><table><thead><tr><th>Flag bit</th><th>Meaning</th></tr></thead><tbody>
+<tr><td class="n">0</td><td>The motor has been set up.</td></tr>
+<tr><td class="n">1</td><td>Moving.</td></tr>
+<tr><td class="n">3, 4</td><td>Events; cleared by the read. The game counts them as faults while bit 2 is clear (<code>0x001dc234</code>).</td></tr>
+<tr><td class="n">5</td><td>A move was refused because one was running. Cleared by the read.</td></tr>
+<tr><td class="n">6</td><td>Homing.</td></tr>
+</tbody></table></div>
+<p>The second 16-bit value is the upper half of a 32-bit progress figure that the board zeroes when a move starts. What the first value holds was not traced. <span class="ev unk">unknown</span></p>
+</section>
+</div>
+
+<!-- ================================================================ LAMPS -->
+<div class="view" id="lamps" role="tabpanel" hidden>
+<section>
+<h1>Lamps and LEDs</h1>
+<p>Every lamp is a brightness channel on a board. An RGB lamp is three channels. To change a lamp the game sends the channel, a brightness and a fade, and the board ramps the output by itself.</p>
+<dl class="feat">
+<dt>Brightness</dt><dd>One byte, the duty cycle, after the game has applied its own curve (table <code>0x007f8954</code>). Inside the board the target is <code>brightness × 128 + 128</code>, and 0 stays 0.</dd>
+<dt>Fade</dt><dd>One byte. Timed from the game, the unit is 1/60 s: chained fades follow each other at 16.6-16.7 ms per unit. An LED board ticks 60 times a second, which fits. On a pinnode the fade byte selects a step size from a table, which gives the same time whatever the distance. <span class="ev fw">firmware</span> <span class="ev meas">measured</span></dd>
+<dt>Batch size</dt><dd>The lamp pass at <code>0x004d7f84</code> collects channel / brightness / fade triples per board and hands at most 96 at a time to the sender <code>0x005b0468</code>. The encoder <code>0x005adf20</code> packs them.</dd>
+<dt>Pages</dt><dd>A board with more than 96 channels is addressed in pages of 96: channel = page × 96 + index.</dd>
+</dl>
+</section>
+
+<section>
+<h2>The LED update, commands 80 to bf</h2>
+<p>The command byte is itself a bit field. It says how the brightness and fade values that follow are packed. This section is from the game's encoder and from decoding recorded traffic. <span class="ev code">game</span> <span class="ev meas">measured</span></p>
+<div class="tbl"><table class="bits"><thead><tr><th>bit 7</th><th>bit 6</th><th>bit 5</th><th>bit 4</th><th>bit 3</th><th>bit 2</th><th>bit 1</th><th>bit 0</th></tr></thead><tbody>
+<tr><td>1</td><td>0</td><td>A</td><td colspan="3">fade mode</td><td colspan="2">brightness mode</td></tr></tbody></table></div>
+<div class="duo">
+<div class="card"><span class="lab">Form A</span><p><code>cmd = 0x80 | A | fade | bright</code></p><p>Everything in one byte. Used when the fade bits are anything but <code>100</code>.</p></div>
+<div class="card"><span class="lab">Form B</span><p><code>cmd = 0x90 | A | bright</code>, then one byte <code>page &lt;&lt; 5 | fade</code></p><p>Fade bits <code>100</code> in the command mean a second header byte follows, with the page in its top three bits and the fade mode in the low five.</p></div>
+</div>
+<div class="duo">
+<div class="tbl"><table><thead><tr><th>Brightness mode</th><th>Bytes sent</th></tr></thead><tbody>
+<tr><td class="n">0</td><td>None. All channels off.</td></tr>
+<tr><td class="n">1</td><td>None. All channels 0xFF.</td></tr>
+<tr><td class="n">2</td><td>One byte per channel.</td></tr>
+<tr><td class="n">3</td><td>One byte for all channels.</td></tr>
+</tbody></table></div>
+<div class="tbl"><table><thead><tr><th>Fade mode</th><th>Bytes sent</th></tr></thead><tbody>
+<tr><td class="n">0x00</td><td>One byte per channel.</td></tr>
+<tr><td class="n">0x04</td><td>None. No fade.</td></tr>
+<tr><td class="n">0x14</td><td>One byte for all channels.</td></tr>
+<tr><td class="n">0x08 / 0x18</td><td>Two values and a bitmap choosing between them.</td></tr>
+<tr><td class="n">0x0c / 0x1c</td><td>The most common value, a bitmap, then one byte per marked channel.</td></tr>
+</tbody></table></div>
+</div>
+<p>Bit <code>0x10</code> of the fade mode means the common value is present in the message. Without it the common value is 0.</p>
+</section>
+
+<section>
+<h2>Which channels?</h2>
+<p>After the header comes the addressing. Its first byte decides the kind.</p>
+<div class="duo">
+<div class="card"><span class="lab">First byte below 0x80: a list</span>
+<p>With A = 0, that byte is the one channel.</p>
+<p>With A = 1, more channel bytes follow. The last one has bit 7 set.</p>
+<div class="bytes" data-b="a4=cmd=A=1, no fade, all off;04=arg=channel 4;85=arg=channel 5, last"></div></div>
+<div class="card"><span class="lab">First byte 0x80 or above: a bitmap</span>
+<p>The second byte is <code>first &lt;&lt; 4 | last</code>, in units of 8 channels, last at most 11. One bitmap byte per unit, bit <code>j</code> = channel <code>unit × 8 + j</code>.</p>
+<div class="bytes" data-b="86=cmd=per-channel brightness, no fade;80=arg=bitmap;00=arg=units 0..0;34=arg=channels 2, 4, 5;ff=data=brightness ch 2;00=data=ch 4;00=data=ch 5"></div></div>
+</div>
+<p>Bitmap bytes equal to the fill value are left out. The fill value is 0x00, or 0xFF when bit 6 of the first addressing byte is set. Which bytes are present:</p>
+<div class="tbl"><table><thead><tr><th>Span</th><th>Rule</th></tr></thead><tbody>
+<tr><td>1 to 8 units</td><td>The first and the last byte are always sent. Bit <code>k − 1</code> of the first addressing byte says whether middle byte <code>k</code> is sent (bits 0-5).</td></tr>
+<tr><td>9 to 12 units</td><td>Bits 0-3 of the first addressing byte flag bytes 0-3. With A = 1 a third header byte follows and flags bytes 4-11. Without it bytes 4-11 are all sent.</td></tr>
+</tbody></table></div>
+<h3>Order of the whole message</h3>
+<pre class="code">cmd  [page&lt;&lt;5|fade]  addressing (list, or bitmap header + bitmap bytes)
+     [fade bitmap: one bit per addressed channel; bitmap addressing with fade mode 08/18/0c/1c]
+     brightness bytes   (per mode)
+     fade bytes         (per mode: common value, second value, or the exceptions)</pre>
+<h3>Checked examples</h3>
+<div class="tbl"><table><thead><tr><th>Bytes</th><th>Reading</th></tr></thead><tbody>
+<tr><td class="w">86 80 00 34 ff 00 00</td><td>Channels 2, 4, 5 to ff, 00, 00. No fade.</td></tr>
+<tr><td class="w">96 80 00 b0 00 ff 00 0a</td><td>Channels 4, 5, 7 to 00, ff, 00. Fade 0x0a for all.</td></tr>
+<tr><td class="w">a4 04 85</td><td>Channels 4 and 5 off.</td></tr>
+<tr><td class="w">93 84 4b fe</td><td>Form B: page 4, channel 75 (channel 459 of the board) to 0xfe. No fade.</td></tr>
+</tbody></table></div>
+<p>Every LED update of a 26 s run with a game start decodes to its exact length with these rules. The <a href="#decoder">Decoder</a> tab runs the same decoder.</p>
+</section>
+
+<section>
+<h2>Other lamp commands</h2>
+<div class="tbl"><table><thead><tr><th>Bytes</th><th>Meaning</th><th>Boards</th></tr></thead><tbody>
+<tr><td class="w">c0 start(LE16) fade v…</td><td>Block write: consecutive channels from <code>start</code>, one brightness byte each, one fade for all.</td><td>all</td></tr>
+<tr><td class="w">c0 start(LE16) ff (fade v)…</td><td>The same with a fade byte in front of every brightness byte.</td><td>all</td></tr>
+<tr><td class="w">c1 first last c0 c1 c2 fade</td><td>Sets LEDs <code>first</code> to <code>last</code>, three channels each, to one colour with one fade.</td><td>ws2812node</td></tr>
+<tr><td class="w">c2 slot …(15 bytes)</td><td>A moving-light effect in one of ten slots; bit 7 of the slot byte starts it. Fields in order: start LED, end LED (the direction follows from their order), length, two bytes, a mode byte, speed (LE16), LE16, head brightness, tail brightness, a byte, LE16.</td><td>ws2812node</td></tr>
+<tr><td class="w">c3 mask(LE32)</td><td>Stops the effects whose bit is set.</td><td>ws2812node</td></tr>
+<tr><td class="w">c4 mask(LE32)</td><td>Starts them.</td><td>ws2812node</td></tr>
+<tr><td class="w">cf idx c0 c1 c2</td><td>Palette entry <code>idx</code>, 0 to 31, three bytes.</td><td>ws2812node</td></tr>
+<tr><td class="w">d0 g x(LE16) y data…</td><td>Adds a record to group <code>g</code>: a 16-bit value, a byte and up to 16 data bytes. Reply: the slot 0-3, or <code>ff</code> when the group is full. What plays the records was not followed.</td><td>pinnode</td></tr>
+<tr><td class="w">d1 g slot</td><td>Frees that record.</td><td>pinnode</td></tr>
+<tr><td class="w">4c idx brightness fade</td><td>A lamp on a driver output.</td><td>pinnode</td></tr>
+<tr><td class="w">f2 07 / f2 08</td><td>The game uses these for the QR scanner backlight on node4 (<code>0x005b2684</code>). In pinnode <code>f2</code> reads the board block instead; node4's firmware was not read.</td><td>node4</td></tr>
+<tr><td class="w">bridge: 09 02 brightness fade</td><td>The backbox lamp output of the CPU board.</td><td>bridge</td></tr>
+</tbody></table></div>
+</section>
+
+<section>
+<h2>Board set-up for lamps</h2>
+<div class="tbl"><table><thead><tr><th>Bytes</th><th>Meaning</th><th>Game builder</th></tr></thead><tbody>
+<tr><td class="w">14 leds(LE16) inputs(LE16)</td><td>Board dimensions. Node 8 in Godzilla: 64 LED channels, 39 inputs.</td><td class="n">0x005b03fc</td></tr>
+<tr><td class="w">72 mask…</td><td>LED channels left out of fault detection, up to six 16-bit words. The board stores it inverted and <code>13</code> reads it back.</td><td class="n">0x005b0264</td></tr>
+<tr><td class="w">73 v(LE32)</td><td>A 32-bit setting stored by the board; what uses it was not followed.</td><td class="n">0x005b031c</td></tr>
+</tbody></table></div>
+<p>At start-up the game pulses every LED once with its mask bit cleared and reads the board status to find shorted or missing LEDs. Channels that fault are then masked.</p>
+<p>Godzilla has 591 lamp channels, which make 261 named lamps. Channels named <code>NAME-R</code>, <code>-G</code>, <code>-B</code> on one board are one lamp. The game's table gives no colour for a single-channel lamp, only a part number. <span class="ev unk">unknown</span></p>
+</section>
+</div>
+
+<!-- ================================================================ FIRMWARE -->
+<div class="view" id="firmware" role="tabpanel" hidden>
+<section>
+<h1>Firmware and the boot loader</h1>
+<p>Each board has a boot loader and an application. The application images are on the SD card as <code>/games/&lt;firmware&gt;-&lt;mcu family&gt;-a_b_c.hex</code>. At every start the game compares what each board reports with the image for it, and re-programs a board that differs. All of that runs over the same bus with commands <code>f1</code> to <code>f8</code>.</p>
+<p>The same files are how this guide knows what the boards do: an image can be decrypted outside the game and read. <code>tools/node_fw_decrypt.py</code> does the first, <code>tools/node_fw_ghidra/</code> the second.</p>
+</section>
+<section>
+<h2>The image file</h2>
+<p>Intel HEX with two record types of Stern's own. Loaded by <code>fw_image_load</code> <code>0x005b8270</code>. Application data starts at address 0x1000; the updater never writes below it. <span class="ev code">game</span></p>
+<div class="tbl"><table><thead><tr><th>Record type</th><th>Content</th></tr></thead><tbody>
+<tr><td class="n">00</td><td>Data, as in any Intel HEX file.</td></tr>
+<tr><td class="n">06</td><td>One record at address 0, 16 bytes: the scrambled image header.</td></tr>
+<tr><td class="n">07</td><td>A table of 16-bit entries, one per 1 KiB page. The record's address field counts entries, not bytes: a record at address 8 holds entries 8 to 15.</td></tr>
+</tbody></table></div>
+<h3>The header, after descrambling</h3>
+<p><code>fw_header_descramble</code> <code>0x005b7fb8</code> applies these in order to the 16 bytes <code>h</code>:</p>
+<pre class="code">h[6]  ^= h[3] ^ h[2]
+h[8]  ^= h[5] ^ h[7]
+h[15] ^= h[11] ^ h[7] ^ h[3]
+h[10] ^= h[9] ^ h[11]
+h[12] ^= h[13] ^ h[9] ^ h[5]
+h[4]  ^= h[0] ^ h[1]</pre>
+<div class="tbl"><table><thead><tr><th>Byte</th><th>Field</th></tr></thead><tbody>
+<tr><td class="n">4, 6, 8</td><td>Version a, b, c.</td></tr>
+<tr><td class="n">10, 12</td><td>Page count.</td></tr>
+<tr><td class="n">14</td><td>Image id. Reported by the board as byte 10 of its version reply.</td></tr>
+<tr><td class="n">15</td><td>Flag. 0 = the game decrypts the image. 1 = the image is sent encrypted.</td></tr>
+<tr><td class="n">others</td><td>Not decoded. They differ from image to image and feed the descrambling.</td></tr>
+</tbody></table></div>
+<h3>The cipher</h3>
+<p>AES-192 in CBC mode over the application data from 0x1000. The key is the first 24 bytes of the type-07 table (padded with <code>a5</code> if the table is shorter). The IV is the header exactly as it stands in the file, before descrambling. In the game: <code>fw_cipher_init</code> <code>0x005baab0</code> and <code>fw_cipher_decrypt</code> <code>0x005babb0</code>. Checked by decrypting all fifteen flag-0 images of the D&amp;D card: each comes out as a stack pointer in RAM followed by Thumb code. <span class="ev code">game</span> <span class="ev meas">measured</span></p>
+<p>The first twelve entries of the type-07 table are therefore the key, and for a flag-1 image the same table is the list of page check values.</p>
+</section>
+<section>
+<h2>Inside a plain image</h2>
+<div class="tbl"><table><thead><tr><th>Address</th><th>Content</th></tr></thead><tbody>
+<tr><td class="n">0x1000</td><td>Initial stack pointer, for example <code>0x10001fe0</code>.</td></tr>
+<tr><td class="n">0x1004-0x1013</td><td>A 16-byte header for the boot loader. Not decoded.</td></tr>
+<tr><td class="n">0x1014</td><td>Code.</td></tr>
+<tr><td class="n">near the end</td><td>Two tables of sixteen handler addresses: one indexed by the command's high nibble, one by the low nibble of the <code>fx</code> commands. In pinnode they are at <code>0x6fdc</code> and <code>0x6f38</code>.</td></tr>
+<tr><td class="n">before the tables</td><td>The 64-byte board block, all <code>ff</code> in the file. The game fills it in before programming (below). In pinnode it is at <code>0x6f88</code>.</td></tr>
+</tbody></table></div>
+</section>
+<section>
+<h2>When does the game re-program a board?</h2>
+<p><code>node_grade_firmware</code> <code>0x002ddf00</code> sets the board's state: 2 = running the expected firmware, 3 = answering from its boot loader, 7 = version or image id differs from the file, 8 = no answer. States 3 and 7 send <code>node_init</code> into <code>node_firmware_update</code> <code>0x002df050</code>. Its progress is a step number in the board record at <code>+0x60</code>. <span class="ev code">game</span></p>
+<div class="tbl"><table><thead><tr><th>Step</th><th>Traffic</th><th>Meaning</th></tr></thead><tbody>
+<tr><td class="n">1</td><td class="w">fe</td><td>First reply byte non-zero: the boot loader is already running.</td></tr>
+<tr><td class="n">5, 6, 7</td><td class="w">f1 · bridge 04 01 · 1.25 s · bridge 04 00</td><td>Reset the board and hold it in its boot loader. From the fourth attempt: node power off, hold, power on.</td></tr>
+<tr><td class="n">–</td><td class="w">f8</td><td>Boot loader status. Reply byte 0: 0 = ready, last operation good. Byte 1: boot loader version; 0 with a low following byte is too old to update (step 2).</td></tr>
+<tr><td class="n">8</td><td class="w">–</td><td>Look up the MCU: sector size and memory size. An image longer than the memory minus 0x1000 ends in step 12.</td></tr>
+<tr><td class="n">–</td><td class="w">f6 first last · 250 ms · f8</td><td>Erase the application sectors, from 0x1000.</td></tr>
+<tr><td class="n">9</td><td class="w">f4 part data[0x80] × 8</td><td>One 1 KiB page in eight parts of 128 bytes, part index 0 to 7.</td></tr>
+<tr><td class="n">10</td><td class="w">bridge 06 · f5 00 04</td><td>The board returns a 16-bit check value of the page it holds. It must equal the game's.</td></tr>
+<tr><td class="n">11</td><td class="w">f7 addr&gt;&gt;8 04</td><td>Program the page at that address. Reply byte 0 = done.</td></tr>
+<tr><td class="n">13</td><td class="w">–</td><td>All pages done. Node init then resets the board and grades it again.</td></tr>
+</tbody></table></div>
+<p class="note">The replies in this table are what the game expects of the boot loader. The boot loader is not in any update file and was not read. <span class="ev unk">unknown</span></p>
+</section>
+<section>
+<h2>What the application does with the same commands</h2>
+<p>The commands <code>f1</code> to <code>f8</code> reach the application too, when no update is running. Its handlers are not the boot loader's. <span class="ev fw">firmware</span></p>
+<div class="tbl"><table><thead><tr><th>Cmd</th><th>Reply</th><th>In the application</th></tr></thead><tbody>
+<tr><td class="n">f1</td><td class="n">–</td><td>Reset: the board feeds its watchdog once and then spins until the watchdog restarts it (<code>0x294c</code>).</td></tr>
+<tr><td class="n">f2 off</td><td class="n">8</td><td>Eight bytes of the 64-byte board block from offset <code>off</code>. The game reads all of it with <code>f2 00</code>, <code>f2 08</code> … <code>f2 38</code>.</td></tr>
+<tr><td class="n">f3, f6, f7</td><td class="n">–</td><td>Not handled: fault bit 17.</td></tr>
+<tr><td class="n">f4 part data</td><td class="n">–</td><td>Copies the 128 bytes into a RAM buffer.</td></tr>
+<tr><td class="n">f5 a n</td><td class="n">2</td><td>The 16-bit sum of the bytes of flash from <code>a &lt;&lt; 8</code>, <code>n &lt;&lt; 8</code> bytes long. With it the game can check what a board has in memory.</td></tr>
+<tr><td class="n">f8 a b</td><td class="n">2</td><td>A 16-bit value mixed from 256 bytes of flash at <code>a &lt;&lt; 8</code> and at <code>b &lt;&lt; 8</code>, seeded with the board's address. Not the boot loader's status.</td></tr>
+<tr><td class="n">fa</td><td class="n">2</td><td>Without an argument: how much of the stack has never been used. <code>fa 01</code>: the image id. <code>fa 00</code>: ten zero bytes.</td></tr>
+<tr><td class="n">fb</td><td class="n">–</td><td>Triggers one interrupt of the board by hand.</td></tr>
+<tr><td class="n">fc</td><td class="n">16</td><td>The board's scrambling key.</td></tr>
+</tbody></table></div>
+</section>
+<section>
+<h2>Plain and encrypted images</h2>
+<div class="duo">
+<div class="card"><span class="lab">Header flag 0: every image except node4</span>
+<p>The game decrypts the image in memory when it loads it and sends plain pages.</p>
+<p>The check value is the 16-bit sum of the page's bytes (<code>fw_image_page_check_value</code> <code>0x005b8864</code>).</p>
+<p>Before sending, the game reads the 64-byte block from the board with <code>f2</code>, copies it into the image after a marker, and recomputes that block's check word (<code>fw_config_block_checksum</code> <code>0x005b8918</code>). This is how a board keeps its own data across an update. The content of the block is not established.</p></div>
+<div class="card"><span class="lab">Header flag 1: node4</span>
+<p>The image stays encrypted. The game sends the 16-byte header with <code>f3</code>, then the pages with bit 0x40 set in the address byte.</p>
+<p>The <code>f5</code> reply is compared with the type-07 entry of the page.</p>
+<p>Decrypting is left to the boot loader. Where its key comes from was not established, so node4's firmware could not be read. <span class="ev unk">unknown</span></p></div>
+</div>
+</section>
+<section>
+<h2>The MCU table</h2>
+<p>28 entries of 28 bytes at <code>0x006adb4c</code>, searched by the MCU part id from the version reply (<code>mcu_info_by_part_id</code> <code>0x005aea64</code>). <span class="ev code">game</span></p>
+<div class="tbl"><table><thead><tr><th>Offset</th><th>Field</th></tr></thead><tbody>
+<tr><td class="n">+0x00</td><td>MCU part id, as reported in the version reply.</td></tr>
+<tr><td class="n">+0x04</td><td>Part name string.</td></tr>
+<tr><td class="n">+0x08</td><td>Firmware family code, an index into the family names at <code>0x0071c200</code>. The family name is part of the image file name, for example LPC1313.</td></tr>
+<tr><td class="n">+0x0c</td><td>Memory size.</td></tr>
+<tr><td class="n">+0x18</td><td>Sector size, for the erase command.</td></tr>
+</tbody></table></div>
+<p>Two more functions in the library form a stand-alone updater with console output (<code>0x005b4758</code>, <code>0x005b1db4</code>). Nothing in the game refers to either.</p>
+</section>
+</div>
+
+<!-- ================================================================ TABLES -->
+<div class="view" id="tables" role="tabpanel" hidden>
+<section>
+<h1>The tables inside the game</h1>
+<p>Nothing about a title's hardware is in the node library. Which boards exist, which input is which switch and which channel is which lamp all come from tables in the game's data. The simulator reads the same tables from guest memory, so it has no title-specific list of its own. Everything on this tab is read from the game. <span class="ev code">game</span></p>
+</section>
+<section>
+<h2>Node list</h2>
+<p>A pointer at <code>0x00712bd0</code> leads to entries of 16 bytes. Entry 0 is unused. The list ends at the first entry whose board type is out of range (1 to 0x2a). Walked by <code>node_table_build</code> <code>0x002093c0</code>.</p>
+<div class="tbl"><table><thead><tr><th>Offset</th><th>Type</th><th>Field</th></tr></thead><tbody>
+<tr><td class="n">+0x00</td><td class="n">u32</td><td>Flags. Bit 2 (value 4): the board may be absent.</td></tr>
+<tr><td class="n">+0x0c</td><td class="n">u16</td><td>Board type, an index into the board-type table.</td></tr>
+<tr><td class="n">+0x0e</td><td class="n">u8</td><td>Node address. 0 is the CPU board entry.</td></tr>
+</tbody></table></div>
+<p>The I/O table refers to a board by its index in this list, not by its address.</p>
+</section>
+<section>
+<h2>Board types</h2>
+<p>Entries of 20 bytes at <code>0x007727e4</code>, indexed by board type.</p>
+<div class="tbl"><table><thead><tr><th>Offset</th><th>Type</th><th>Field</th></tr></thead><tbody>
+<tr><td class="n">+0x00</td><td class="n">char*</td><td>Part number text, for example <code>520-5319-XX</code>.</td></tr>
+<tr><td class="n">+0x04</td><td class="n">u32</td><td>Part number as a 9-digit integer. Compared with bytes 8-11 of <code>f9 00</code>.</td></tr>
+<tr><td class="n">+0x08</td><td class="n">char*</td><td>Firmware name: <code>pinnode</code>, <code>ws2812node</code>, <code>node4</code>, <code>tmc5041node</code>, <code>coil4node</code>.</td></tr>
+</tbody></table></div>
+</section>
+<section>
+<h2>I/O table</h2>
+<p>A pointer at <code>0x00713c0c</code> leads to entries of 48 bytes, one per switch, driver and lamp channel.</p>
+<div class="tbl"><table><thead><tr><th>Offset</th><th>Type</th><th>Field</th></tr></thead><tbody>
+<tr><td class="n">+0x04</td><td class="n">char*</td><td>Text such as <code>part:520-5307-00#rect:x,y,w,h,…</code>.</td></tr>
+<tr><td class="n">+0x0c</td><td class="n">char*</td><td>Name, for example <code>START BUTTON</code>.</td></tr>
+<tr><td class="n">+0x18</td><td class="n">char*</td><td>Name of the service-menu picture the item is shown on.</td></tr>
+<tr><td class="n">+0x1c</td><td class="n">u16</td><td>Node-list index of the board.</td></tr>
+<tr><td class="n">+0x1e</td><td class="n">u16</td><td>Input bit, driver index or lamp channel.</td></tr>
+<tr><td class="n">+0x20</td><td class="n">u16</td><td>Kind: 1 switch, 2 driver, 3 lamp.</td></tr>
+<tr><td class="n">+0x22</td><td class="n">u16</td><td>Flags. For lamps, bit 3 (value 8) clear = counted as a lamp of the board.</td></tr>
+<tr><td class="n">+0x28</td><td class="n">u16 × 4</td><td>x, y, w, h on the picture.</td></tr>
+</tbody></table></div>
+<p>The n-th entry of kind 1 is switch number n. Its definition record is 40 bytes at <code>0x00776b00 + 40n</code>, with the polarity flag (bit 2) in the 16-bit word at <code>+0x1c</code>.</p>
+</section>
+<section>
+<h2>The board record at run time</h2>
+<p>One record of 0xe0 bytes per address at <code>0x007bceb0 + 0xe0 × address</code>.</p>
+<div class="tbl"><table><thead><tr><th>Offset</th><th>Field</th></tr></thead><tbody>
+<tr><td class="n">+0x04</td><td>Flags. Bit 0 = registered, the title expects this board. Bit 1 = found on the bus.</td></tr>
+<tr><td class="n">+0x18</td><td>State. 2 = running the expected firmware, 3 = in its boot loader, 7 = wrong firmware, 8 = no answer.</td></tr>
+<tr><td class="n">+0x60</td><td>Step of a firmware update in progress.</td></tr>
+</tbody></table></div>
+<p>Other per-board state of the library: the 12-byte version cache at <code>0x008550dc + 12n</code> (tick rate at <code>+8</code>), the message count at <code>0x0085545c + 4n</code>.</p>
+<h3>The board at address 2</h3>
+<p><code>node_table_build</code> registers every listed board except the one at address 2. That one is registered only when the I/O table has lamp channels on it. Godzilla has none, so a board answering at address 2 would be found but not registered, and the Tech Alerts page would show "Check Node Board 2 : Not Registered". What the board at address 2 is on titles that use it was not looked at.</p>
+</section>
+<section>
+<h2>Addresses per build</h2>
+<p>All of these move between builds. They are kept in the per-build profile under <code>analysis/</code>, never in shared code.</p>
+<div class="tbl"><table><thead><tr><th>Item</th><th>Godzilla LE 1.16.0</th><th>D&amp;D LE 1.10.0</th></tr></thead><tbody>
+<tr><td>Node message library</td><td class="n">0x005ad920-0x005b5538</td><td class="n">0x005c3c10-0x005cb8e0</td></tr>
+<tr><td>nodebus_exchange_data</td><td class="n">0x005ad984</td><td class="n">0x005c3c74</td></tr>
+<tr><td>Node list pointer</td><td class="n">0x00712bd0</td><td class="n">0x00720160</td></tr>
+<tr><td>Board-type table</td><td class="n">0x007727e4</td><td class="n">0x00756fc8</td></tr>
+<tr><td>I/O table pointer</td><td class="n">0x00713c0c</td><td class="n">0x0072015c</td></tr>
+<tr><td>MCU table</td><td class="n">0x006adb4c</td><td class="n">0x006b3a70</td></tr>
+<tr><td>Firmware family names</td><td class="n">0x0071c200</td><td class="n">0x007253cc</td></tr>
+<tr><td>Switch definitions</td><td class="n">0x00776b00</td><td class="n">0x00759734</td></tr>
+</tbody></table></div>
+<p class="note">For D&amp;D the last two rows were located by pattern and not yet checked by hand.</p>
+</section>
+</div>
+
+<!-- ================================================================ SIM -->
+<div class="view" id="sim" role="tabpanel" hidden>
+<section>
+<h1>The simulator, and what is still open</h1>
+<p>The recompiled game runs against simulated boards in <code>src/runtime</code>. The simulator was first written from the game's side alone. After the firmware was read it was brought in line with it at the level of the protocol: what a board and the bridge reply, and when. This tab says what it now does and where it still falls short of a board.</p>
+<div class="tbl"><table><thead><tr><th>Class</th><th>File</th><th>What it is</th></tr></thead><tbody>
+<tr><td class="n">NodeBus</td><td class="n">nodebus.cpp</td><td>The serial line: frames from the game, the reply queue, time on the wire.</td></tr>
+<tr><td class="n">Bridge</td><td class="n">nodebus.cpp</td><td>Node power, amplifier power, boot hold, poll, status.</td></tr>
+<tr><td class="n">NodeBoard</td><td class="n">node_board.cpp</td><td>One board: identity, traffic flags, message counter, 64 inputs.</td></tr>
+<tr><td class="n">BootLoader</td><td class="n">node_board.cpp</td><td>Erase, page data, check value, program page, and the program memory behind them.</td></tr>
+<tr><td class="n">NodeInventory</td><td class="n">node_inventory.cpp</td><td>Reads the game's tables from guest memory.</td></tr>
+<tr><td class="n">Playfield</td><td class="n">playfield.cpp</td><td>What the outputs do: coils, the stepper, where the balls are.</td></tr>
+<tr><td class="n">Lamps</td><td class="n">lamps.cpp</td><td>Decodes lamp commands into a brightness per channel with fades.</td></tr>
+</tbody></table></div>
+</section>
+<section>
+<h2>What the simulator takes from the firmware</h2>
+<ul>
+<li>Tick rate by firmware name: 1280, or 60 on LED boards. The playfield model converts every duration with the board's rate.</li>
+<li>The two traffic flags, the mask-and-value form of <code>f0</code>, and the rule that a board answers a poll only with both set. The service mask of <code>71</code>.</li>
+<li>The age word after the inputs in the <code>10</code> and <code>11</code> replies.</li>
+<li>The reset cause in the fault word after power-up and after <code>f1</code>.</li>
+<li>The bridge's status word, cleared by reading, starting at "restarted, power-on"; the status byte derived from it; <code>ee</code> and <code>55</code> for a board that does not answer.</li>
+<li>The <code>0a</code> state byte with the amplifier power in bit 1 and the lamp level in the second byte.</li>
+<li>The layouts of <code>40</code>, <code>41</code> and <code>31</code>: start delay, lockout, five triggers, two stop inputs and the run-on time.</li>
+</ul>
+<h2>Where it still differs</h2>
+<div class="tbl"><table><thead><tr><th>Item</th><th>Firmware</th><th>Simulator</th></tr></thead><tbody>
+<tr><td>Driver rule</td><td>Power, ramp, burst budget, hit count, inhibit inputs, qualifiers, board-driven inputs.</td><td>Not modelled. Timing, triggers, end-of-stroke and stop inputs are.</td></tr>
+<tr><td><code>f8</code> from an application</td><td>A 16-bit challenge response.</td><td><code>00 01</code>, the boot loader's answer the updater expects.</td></tr>
+<tr><td><code>f9 01</code>, <code>fd</code>, <code>f2</code>, <code>fc</code></td><td>Manufacturing record, board block, key.</td><td>The image file's date; zeros.</td></tr>
+<tr><td>Fault word</td><td>Also line errors, unknown commands, overruns.</td><td>Reset cause only.</td></tr>
+<tr><td>Bridge <code>0c</code>, <code>0d</code>, <code>06</code></td><td>Restart; key exchange; reply time.</td><td>Status word for <code>0c</code>; the others have no effect.</td></tr>
+<tr><td>Stepper</td><td>The chip's ramps, homing travel, status values.</td><td>A position model; set-up homes the motor at once.</td></tr>
+<tr><td>node4, the QR reader</td><td>Not read.</td><td>A generic board at 1280 ticks per second.</td></tr>
+</tbody></table></div>
+</section>
+<section>
+<h2>Watching the traffic</h2>
+<div class="tbl"><table><thead><tr><th>Switch</th><th>Effect</th></tr></thead><tbody>
+<tr><td class="n">SPIKE2_NODEBUS_TRACE=1</td><td>Logs every frame and its reply. <code>=2</code> includes polls.</td></tr>
+<tr><td class="n">SPIKE2_LAMP_TRACE=1</td><td>One log line per channel update: node, channel, brightness, fade.</td></tr>
+<tr><td class="n">--real-node-timing</td><td>Original settle delays and wire time during node init (27 s instead of 3 s).</td></tr>
+<tr><td class="n">--node-firmware 8=1.35.0</td><td>Board 8 starts with another version, so the update path runs. <code>8=boot</code>: no application at all.</td></tr>
+<tr><td class="n">tests/tools/nodebus_trace.py</td><td><code>record</code> saves every frame, reply and lamp update of node init; <code>compare</code> diffs two recordings.</td></tr>
+<tr><td class="n">tools/nodelib_scan.py</td><td>Runs every function of the game's node library under an emulator and prints the message it builds.</td></tr>
+<tr><td class="n">tools/node_fw_decrypt.py</td><td>Plain image of a node firmware file.</td></tr>
+<tr><td class="n">tools/node_fw_dis.py</td><td>Thumb listing of a plain image.</td></tr>
+<tr><td class="n">tools/node_fw_ghidra/run.sh</td><td>Decompiles an image with a headless Ghidra run.</td></tr>
+</tbody></table></div>
+</section>
+<section>
+<h2>What reading the firmware settled</h2>
+<ul>
+<li>The tick rate: 1280 per second on driver and stepper boards, 60 on LED boards.</li>
+<li>The two bytes after the inputs in the <code>11</code> reply.</li>
+<li>The traffic flags of <code>f0</code> and how a board answers a poll.</li>
+<li>Every byte of the driver rule <code>41</code>, and the optional tail of <code>40</code>.</li>
+<li>The stepper set-up <code>32</code>, the move <code>31</code>, and commands <code>34</code>, <code>36</code> and <code>37</code>.</li>
+<li>Bridge commands <code>0a</code>, <code>0b</code>, <code>0c</code> and <code>0d</code>, the whole status word, and what the boot hold is.</li>
+<li>The bits of the board's fault word, the scrambling, and where the identity replies come from.</li>
+<li>The image cipher and the layout of the type-07 table.</li>
+</ul>
+</section>
+<section>
+<h2>Still open</h2>
+<ul>
+<li>The boot loader: its <code>f3</code>, <code>f5</code>, <code>f6</code>, <code>f7</code> and <code>f8</code>, how it reacts to the break, and how it decrypts a flag-1 image. It is in no update file.</li>
+<li>node4, the QR scanner board, and lcdnode: no plain image was read.</li>
+<li>tmc2590node, hdminode, magsensornode: only their tick rate, image id and command groups were read. Game commands <code>12</code>, <code>21</code>, <code>61</code>, <code>63</code>, <code>c1</code>-<code>c3</code>, <code>cf</code>, <code>d0</code>, <code>d1</code> are decoded for the boards studied; what they do on these three is not.</li>
+<li>pinnode: commands <code>50</code> and <code>5b</code>, most set-up bytes of <code>51</code>, what plays <code>d0</code> records, the bit table of <code>45</code>, the 32-bit setting of <code>73</code>, the RAM word behind fault bit 7.</li>
+<li>tmc5041node: the first value of the status reply, and the factors between protocol units and the chip's units.</li>
+<li>The bridge's clock on the crystal path, and so its times in milliseconds.</li>
+<li>What a real board holds in its manufacturing record and its 64-byte block.</li>
+<li>The output bytes of the CPU board's SPI transfer; the colour of single-channel lamps; the board at address 2 on titles that use it.</li>
+<li>Whether 1.36.0, which Godzilla carries, differs from 1.37.0 in any reply. Only 1.37.0 was read.</li>
+</ul>
+</section>
+<section>
+<h2>Sources</h2>
+<ul>
+<li><code>docs/architecture/nodebus.md</code>: the game side, working notes.</li>
+<li><code>docs/architecture/node_firmware.md</code>: the board side, working notes with handler addresses.</li>
+<li><code>src/runtime/nodebus.cpp</code>, <code>node_board.cpp</code>, <code>node_inventory.cpp</code>, <code>lamps.cpp</code>, <code>playfield.cpp</code>, <code>hw.cpp</code>.</li>
+<li><code>analysis/godzilla_le_1.16.0.profile</code>, <code>analysis/dungeons_and_dragons_le_1.10.0.profile</code>: function names and table addresses.</li>
+<li><a href="https://github.com/bdash/spike">bdash/spike</a> for framing, bring-up order and switch polarity on real hardware; <a href="https://github.com/bdash/spike-ihex">bdash/spike-ihex</a> for the image file format.</li>
+</ul>
+</section>
+</div>
+
+<!-- ================================================================ DECODER -->
+<div class="view" id="decoder" role="tabpanel" hidden>
+<section>
+<h1>Decode a frame</h1>
+<p>Paste bytes from a <code>SPIKE2_NODEBUS_TRACE</code> log, or a command with its arguments, and read what they say. A full frame is recognised by its length and checksum. Anything else is read as a command with arguments, and the frame for it is built for the address you give. Times are shown in ticks and in milliseconds at 1280 ticks per second.</p>
+<div class="fld">
+<div class="row">
+<label><span class="lab">Bytes from the game (hex)</span><input type="text" id="dec-in" spellcheck="false" autocomplete="off" value="88 02 11 65 0c"></label>
+<label><span class="lab">Node address</span><input type="text" id="dec-addr" value="8" inputmode="numeric"></label>
+<label><span class="lab">Reply data bytes</span><input type="text" id="dec-rl" value="" placeholder="auto" inputmode="numeric"></label>
+</div>
+<label><span class="lab">Reply bytes (optional)</span><input type="text" id="dec-reply" spellcheck="false" autocomplete="off" value="ff f7 ff ff ff ff ff ff 40 01 cf 00"></label>
+<div><span class="lab">Examples</span><div class="chips" id="dec-ex"></div></div>
+</div>
+<div id="dec-out" aria-live="polite"></div>
+</section>
+</div>
+
+</div>
+
+<script>
+(function(){"use strict";
+const $=(s,r)=>(r||document).querySelector(s),$$=(s,r)=>Array.from((r||document).querySelectorAll(s));
+const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const hx=(v,n)=>(v>>>0).toString(16).padStart(n||2,"0");
+const le16=(p,i)=>p[i]|(p[i+1]<<8),le32=(p,i)=>(p[i]|(p[i+1]<<8)|(p[i+2]<<16)|(p[i+3]<<24))>>>0;
+
+/* ---- tabs ---- */
+const tabs=$$(".tabs button"),views=$$(".view");
+function show(id,push){
+  if(!views.some(v=>v.id===id))id="overview";
+  views.forEach(v=>v.hidden=v.id!==id);
+  tabs.forEach(t=>t.setAttribute("aria-selected",t.dataset.view===id?"true":"false"));
+  if(push){try{history.replaceState(null,"","#"+id);}catch(e){}window.scrollTo(0,0);}
+}
+tabs.forEach(t=>t.addEventListener("click",()=>show(t.dataset.view,true)));
+window.addEventListener("hashchange",()=>{show(location.hash.slice(1),false);window.scrollTo(0,0);});
+show(location.hash.slice(1)||"overview",false);
+
+/* ---- theme ---- */
+const root=document.documentElement,tb=$("#theme");
+function isDark(){const t=root.getAttribute("data-theme");return t?t==="dark":matchMedia("(prefers-color-scheme:dark)").matches;}
+function label(){tb.textContent=isDark()?"light":"dark";}
+try{const s=localStorage.getItem("nb-theme");if(s)root.setAttribute("data-theme",s);}catch(e){}
+label();
+tb.addEventListener("click",()=>{const n=isDark()?"light":"dark";root.setAttribute("data-theme",n);try{localStorage.setItem("nb-theme",n);}catch(e){}label();});
+
+/* ---- byte strips ---- */
+function strip(cells){return '<div class="bytes">'+cells.map(c=>'<div class="by r-'+c[1]+'"><b>'+esc(c[0])+'</b><span>'+esc(c[2]||"")+'</span></div>').join("")+'</div>';}
+$$(".bytes[data-b]").forEach(el=>{el.outerHTML=strip(el.dataset.b.split(";").map(c=>{const a=c.split("=");return [a[0],a[1],a.slice(2).join("=")];}));});
+
+/* ---- command table ---- */
+// [cmd, layout, reply, what the board does, boards, game builder, decoded]
+const P="pinnode",W="ws2812node",T="tmc5041node",A="all three";
+const C=[
+["10","10","10","Raw inputs (before debounce), then the age word. Clears the service request.",A,"",1],
+["11","11 [x]","10","Debounced inputs, then the age word (ticks since the last change, bit 15 = no request pending). Clears the service request. With x, byte i is XORed with x rotated left by i.",A,"0x005af194",1],
+["12","12","8","The service mask set with 71.",A,"0x005af19c",1],
+["13","13 [n]","2n","The LED fault mask of 72, n words (default 4).",A,"",1],
+["14","14 leds(LE16) inputs(LE16)","–","Board dimensions, at most 96 LED channels and 64 inputs.",A,"0x005b03fc",1],
+["20","20 w… (BE16)","–","Queues 16-bit words, high byte first, to be shifted out once on the board's SPI chain in place of the normal output image.",A,"",1],
+["21","21","9","A done flag, then the four words shifted in, high byte first. Clears the flag.",A,"0x005af67c",1],
+["30","30","1","Bitmap of motors that are moving.",T+", "+P,"0x005af5a8",1],
+["31","31 m dist(LE16 s) vmax(LE32) amax(LE32) dmax(LE32) x(LE16)","–","Relative move: target = position + dist × 256 microsteps. pinnode takes a 12-byte form with 16-bit fields.",T,"0x005b404c",1],
+["32","32 m keep home(LE16) limA limB irun ihold vhome(LE32) sgt a(LE16) b(LE16) replace","–","Stepper set-up, 19 bytes. See the Steppers tab.",T,"0x005b3ec0",1],
+["33","33 m","–","Stop a moving motor.",T+", "+P,"0x005af2c4",1],
+["34","34 m dir","–","Home: a move of the home distance at the home speed.",T+", "+P,"0x005af31c",1],
+["35","35 m input pos(LE16)","–","pinnode: add (input has bit 6) or remove a stop position. tmc5041node: no effect.",P,"",1],
+["36","36 v","–","tmc5041node: 00 switches the motor drivers on, anything else off. pinnode: no effect.",T,"0x005af3c8",1],
+["37","37 [chip [reg]]","1 / 4","No argument: a flags byte (pinnode: the number of motors, 5). chip: two status registers packed. chip reg: the board's copy of that TMC register.",T,"0x005af4c0",1],
+["38+m","38+m","5","Stepper status: LE16, LE16 progress, flags (bit 0 set up, bit 1 moving, bit 5 move refused, bit 6 homing). Bits 3-5 are cleared by the read.",T+", "+P,"0x005af5f0",1],
+["40","40 idx [power pulse(LE16) hold_power hold(LE16) ramp(LE16) [delay(LE16) [stop run_on(LE16)]]]","–","Fire a driver once; idx alone fires it by its rule.",P,"0x005b389c",1],
+["41","41 idx … (48 or 49 bytes)","–","The rule the board runs for this driver. idx alone clears it. See the Drivers tab.",P,"0x005b346c",1],
+["42","42 v(LE32) [which [period(LE16)]]","–","Match value of one or both PWM timers; optionally the period.",P,"0x005b43f4",1],
+["43","43 n [o0…o8]","n+1 / 1","Read or set the service order of the drivers and how many may be in their pulse at once.",P,"",1],
+["44","44 0/1","–","Fault detection off / on.",P,"0x005af81c",1],
+["45","45 idx count(LE16) x","–","Sends count bits out of one driver pin, each held x + 1 ticks.",P,"",1],
+["46","46 mask(LE16)","–","Drivers left out of fault detection.",P,"0x005af9c4",1],
+["47","47","2","The driver fault mask as it now stands.",P,"0x005afa1c",1],
+["48","48 ticks(LE16)","–","Fault detection time; 0 is taken as 1.",P,"0x005b33e4",1],
+["49-4b","","–","Accepted, no effect in pinnode.",P,"0x005af944 (4a)",1],
+["4c","4c idx brightness fade","–","A lamp on a driver output.",P,"0x005afa74",1],
+["4d","4d idx","–","Driver off.",P,"0x005afb28",1],
+["50","50 a b v","–","A two-entry table of (a, b) → v. What reads it was not followed.",P,"0x005afba0, 0x005afbec",0],
+["51","51 ch cfg[17]","–","Motor channel set-up and stop: position inputs A and B, counter inputs, driver. 57 the same without stopping; 59, 5a variants.",P,"0x005afd34",1],
+["52","52 ch","4","Motor channel: LE16 position figure, LE16 status.",P,"0x005afe4c",1],
+["53","53 ch dir power x(LE16)","–","Run until position input A is active.",P,"0x005b3ae8",1],
+["54","54 ch dir power x(LE16)","–","Run until position input B is active.",P,"0x005b3b84",1],
+["55","55 ch pos(LE16 s) a x(LE16) b","–","Run to a counter position.",P,"0x005b3ccc",1],
+["56","56 ch","–","Stop the motor channel.",P,"",1],
+["58","58 ch x(LE16) power flags","–","Timed run; bit 2 of flags is the direction.",P,"0x005b3d78",1],
+["5b","5b ch a b c x(LE16) d","–","Handler exists; not followed.",P,"0x005b3c20",0],
+["60","60 a b [ch]","1","Two-input counter ch on inputs a and b; replies the count since the last 60 and clears it.",A,"",1],
+["61","61 ch x(LE16)","4","pinnode: two LE16 values of an external sensor; stores x as a threshold. ws2812node: four filler bytes 55.",P,"0x005b012c",1],
+["62","62 v","1","pinnode: selects a mode value, replies and clears a flag.",P,"",1],
+["63","63 ch","6","pinnode: three signed LE16 sensor values. ws2812node: six filler bytes 55.",P,"0x005b005c",1],
+["70","70 input on off","–","Debounce times of one input, ticks; 0 is taken as 1.",P,"0x005b3e14",1],
+["71","71 w0 w1 w2 w3 (LE16)","–","Service mask: inputs whose change raises the service request. ws2812node takes one word.",A,"0x005b01f8",1],
+["72","72 mask…","–","LED fault mask, up to six LE16 words, stored inverted.",P,"0x005b0264",1],
+["73","73 v(LE32)","–","A 32-bit setting. What uses it was not followed.",A,"0x005b031c",0],
+["80-bf","see the Lamps tab","–","LED update: channels, brightness, fade, packed. Game encoder 0x005adf20.",A,"0x005b0468",1],
+["c0","c0 start(LE16) fade v… | c0 start(LE16) ff (fade v)…","–","Block write of consecutive LED channels.",A,"0x005b0828",1],
+["c1","c1 first last c0 c1 c2 fade","–","LEDs first..last to one colour.",W,"0x005b0bf4",1],
+["c2","c2 slot … (15 bytes)","–","Moving-light effect in one of ten slots.",W,"0x005b0c68",1],
+["c3","c3 mask(LE32)","–","Stop the effects in the mask. c4 mask starts them.",W,"0x005b0d5c",1],
+["cf","cf idx c0 c1 c2","–","Palette entry idx (0-31).",W,"0x005b0e1c",1],
+["d0","d0 g x(LE16) y data…","1","Adds a record to group g. Reply: slot 0-3, or ff.",P,"0x005b09c8",1],
+["d1","d1 g slot","–","Frees that record.",P,"0x005b0ab4",1],
+["f0","f0 xy","–","Traffic flags: x = mask of flags to write, y = their values. Bit 0 service request, bit 1 may answer polls. Acted on as a broadcast too.",A,"0x005b10e0, 0x005b1128, 0x005b1170",1],
+["f1","f1","–","Reset through the watchdog. Acted on as a broadcast too.",A,"0x005b0e78",1],
+["f2","f2 off","8","Eight bytes of the 64-byte board block. The game also sends f2 07 / f2 08 to node4 for its lamp output.",A,"0x005b1488-0x005b29c4, 0x005b44b4",1],
+["f3","f3 header(16)","–","Boot loader only: key block for an encrypted image. An application sets fault bit 17.","boot loader","0x005b24a4",0],
+["f4","f4 part data(0x80)","–","128 bytes of the current 1 KiB page, part 0-7.",A,"0x005b11c0",1],
+["f5","f5 a n","2","Application: 16-bit sum of n × 256 bytes of flash from a × 256. Boot loader: check value of the received page.",A,"0x005b1354",1],
+["f6","f6 first last","–","Boot loader only: erase sectors.","boot loader","0x005b4e20",0],
+["f7","f7 addr>>8 04","1","Boot loader only: program the page. The game expects 0 = done.","boot loader","0x005b13fc",0],
+["f8","f8 [a b]","2","Application: a 16-bit value mixed from flash at a × 256 and b × 256 and the board's address. Boot loader: status and version.",A,"0x005b2a0c",1],
+["f9","f9 half","16","The board's manufacturing record: half 0 has the part number at bytes 8-11, half 1 two time stamps.",A,"0x005b2c1c",1],
+["fa","fa [0/1]","2 / 10 / 1","No argument: unused stack. fa 00: ten zero bytes. fa 01: the image id.",A,"0x005b0efc, 0x005b0fc8",1],
+["fb","fb","–","Triggers one interrupt of the board by hand.",A,"0x005b10a0",1],
+["fc","fc","16","The board's scrambling key.",A,"0x005b2a8c",1],
+["fd","fd","12","Flash 0x200-0x20b: serial number bytes, then the part number.",A,"0x005b2adc",1],
+["fe","fe","11","flag, version a b c, MCU part id (LE32), tick rate (LE16), image id.",A,"0x005b2ee4",1],
+["ff","ff","8","Messages received since the last status (LE32), fault word (LE32). Both cleared by the read.",A,"0x005b4530",1]
+];
+const tbody=$("#cmd-table tbody");let grp="all";
+function drawCmds(){
+  const q=$("#cmd-q").value.trim().toLowerCase();
+  tbody.innerHTML=C.filter(c=>(grp==="all"||(grp==="known")===!!c[6])&&(!q||c.join(" ").toLowerCase().includes(q)))
+   .map(c=>'<tr><td class="n">'+esc(c[0])+'</td><td class="w">'+esc(c[1])+'</td><td class="n">'+esc(c[2])+'</td><td>'+esc(c[3])+'</td><td>'+esc(c[4])+'</td><td class="n">'+esc(c[5])+'</td></tr>').join("")
+   ||'<tr><td colspan="6" class="note">No command matches.</td></tr>';
+}
+$("#cmd-q").addEventListener("input",drawCmds);
+$$("[data-cg]").forEach(b=>b.addEventListener("click",()=>{grp=b.dataset.cg;$$("[data-cg]").forEach(x=>x.setAttribute("aria-pressed",x===b?"true":"false"));drawCmds();}));
+drawCmds();
+
+/* ---- decoder ---- */
+const TICK=1280;
+const ms=t=>t+" ticks ("+(Math.round(t*10000/TICK)/10)+" ms)";
+function parseHex(s){
+  const out=[];
+  for(const tok of s.replace(/0x/gi," ").split(/[^0-9a-fA-F]+/)){
+    if(!tok)continue;
+    if(tok.length<=2)out.push(parseInt(tok,16));
+    else{if(tok.length%2)return null;for(let i=0;i<tok.length;i+=2)out.push(parseInt(tok.substr(i,2),16));}
+  }
+  return out;
+}
+function cmdRow(cmd){
+  if(cmd>=0x80&&cmd<=0xbf)return C.find(c=>c[0]==="80-bf");
+  if((cmd&0xf8)===0x38)return C.find(c=>c[0]==="38+m");
+  if(cmd>=0x49&&cmd<=0x4b)return C.find(c=>c[0]==="49-4b");
+  if(cmd===0x57||cmd===0x59||cmd===0x5a)return C.find(c=>c[0]==="51");
+  if(cmd===0xc4)return C.find(c=>c[0]==="c3");
+  return C.find(c=>c[0]===hx(cmd));
+}
+// LED update, commands 0x80-0xBF: the decoder of src/runtime/lamps.cpp
+function ledDecode(p){
+  let i=0;const len=p.length,get=()=>{if(i>=len)throw 0;return p[i++];};
+  try{
+    const cmd=get(),bmode=cmd&3,wide=!!(cmd&0x20);let fmode,page=0,form="A";
+    if((cmd&0x1c)===0x10){const b=get();fmode=b&0x1f;page=b>>5;form="B";}else fmode=cmd&0x1c;
+    const chan=[],first=get(),bitmap=!!(first&0x80);
+    if(bitmap){
+      const fill=first&0x40?0xff:0,sb=get(),mask2=wide?get():0xff,lo=sb>>4,hi=sb&15,span=hi+1-lo;
+      if(span<1||hi>11)return null;
+      for(let k=0;k<span;k++){
+        const present=span<9?(k===0||k===span-1||((first>>(k-1))&1)):(k<4?((first>>k)&1):((mask2>>(k-4))&1));
+        const bits=present?get():fill;
+        for(let j=0;j<8;j++)if((bits>>j)&1)chan.push((lo+k)*8+j);
+      }
+    }else{
+      chan.push(first);
+      while(wide){const b=get();if(chan.length>=96)return null;chan.push(b&0x7f);if(b&0x80)break;}
+    }
+    const n=chan.length;if(n===0||n>96)return null;
+    const fb=new Array(12).fill(0);
+    if(bitmap&&(fmode&8))for(let k=0;k<((n+7)>>3);k++)fb[k]=get();
+    const bright=[],fade=[];
+    for(let k=0;k<n;k++)bright[k]=bmode===2?get():(bmode===1?0xff:0);
+    if(bmode===3){const b=get();for(let k=0;k<n;k++)bright[k]=b;}
+    if(fmode===0){for(let k=0;k<n;k++)fade[k]=get();}
+    else{
+      let common=0,other=0;
+      if(fmode&0x10)common=get();
+      if((fmode&0xc)===8)other=get();
+      for(let k=0;k<n;k++){
+        const marked=(fb[k>>3]>>(k&7))&1;
+        fade[k]=common;
+        if((fmode&0xc)===8&&marked)fade[k]=other;
+        if((fmode&0xc)===0xc&&marked)fade[k]=get();
+      }
+    }
+    if(i!==len)return null;
+    return {form,page,bmode,fmode,bitmap,rows:chan.map((c,k)=>[c+page*96,bright[k],fade[k]])};
+  }catch(e){return null;}
+}
+
+const inp=b=>b&0x40?"input "+(b&0x3f):"none";
+const pw=v=>v?"0x"+hx(v)+" ("+Math.round((v+1)/2.56)+"%)":"off";
+function qual(q){
+  const st=(q>>1)&7;if(!st||st>5)return "";
+  return " only while driver "+(q>>4)+" is "+(q&1?"":"not ")+["","in its pulse or hold","in its pulse","in its hold","locked out","in its start delay"][st];
+}
+function ruleLines(p){
+  const L=[],n=p.length,t=(i,name)=>{const v=le16(p,i);if(v)L.push(name+": "+ms(v)+".");},
+        i1=(i,name,q)=>{if(n>i&&(p[i]&0x40))L.push(name+": "+inp(p[i])+(q&&n>q?qual(p[q]):"")+".");};
+  L.push("Driver "+p[1]+": "+(p[2]?"pulse power "+pw(p[2])+" for "+ms(le16(p,3))+"; hold power "+pw(p[5])+(le16(p,6)?" for "+ms(le16(p,6)):""):"power 0")+".");
+  if(n>=10&&le16(p,8))L.push("Ramp "+le16(p,8)+"/256 per tick.");
+  if(n<24)return L;
+  t(10,"Start delay");t(12,"Lockout");t(14,"Burst window");t(16,"Run-on after a stop input");t(18,"Inhibit time A");t(20,"Inhibit time B");t(22,"Hit window");
+  if(n<36)return L;
+  i1(24,"Trigger 1",36);i1(25,"Trigger 2",37);i1(26,"Trigger 3",38);i1(30,"Trigger 4",40);i1(31,"Trigger 5",41);
+  i1(27,"End-of-stroke");i1(28,"Stop 1");i1(32,"Stop 2");i1(29,"Inhibit A",39);i1(33,"Inhibit B",42);
+  i1(34,"Board-driven \"fired\" input");i1(35,"Board-driven \"locked out\" input");
+  if(n>47){
+    if(p[43])L.push("Fires on hit "+(p[43]+1)+" inside the hit window.");
+    if(p[44])L.push("Firings left: "+p[44]+".");
+    if(p[45]||p[46])L.push("End-of-stroke: "+p[45]+" re-pulse(s), tail "+p[46]+" ticks.");
+    L.push("Burst budget "+(p[47]||255)+".");
+  }
+  if(n>48)L.push("Linked driver "+p[48]+".");
+  return L;
+}
+function payloadLines(p){
+  const cmd=p[0],L=[],n=p.length;
+  if(cmd>=0x80&&cmd<=0xbf){
+    const u=ledDecode(p);
+    if(!u){L.push('<span class="bad">Does not parse as an LED update of this exact length.</span>');return L;}
+    L.push("Form "+u.form+(u.form==="B"?", page "+u.page:"")+"; brightness mode "+u.bmode+", fade mode 0x"+hx(u.fmode)+"; "+(u.bitmap?"bitmap":"list")+" addressing; "+u.rows.length+" channel"+(u.rows.length>1?"s":"")+".");
+    L.push('<div class="tbl"><table><thead><tr><th>Channel</th><th>Brightness</th><th>Fade</th></tr></thead><tbody>'+u.rows.map(r=>'<tr><td class="n">'+r[0]+'</td><td class="n">0x'+hx(r[1])+" ("+Math.round(r[1]/2.55)+'%)</td><td class="n">'+r[2]+(r[2]?" = "+Math.round(r[2]*1000/60)+" ms on an LED board":"")+"</td></tr>").join("")+"</tbody></table></div>");
+    return L;
+  }
+  switch(cmd){
+    case 0x40:
+      if(n>=8){
+        L.push("Driver "+p[1]+": power "+pw(p[2])+" for "+ms(le16(p,3))+"; hold power "+pw(p[5])+" for "+ms(le16(p,6))+".");
+        if(n>=10)L.push(le16(p,8)?"Ramp "+le16(p,8)+"/256 per tick.":"No ramp: full power from the first tick.");
+        if(n>=12)L.push("Start delay "+ms(le16(p,10))+".");
+        if(n>=15)L.push("Stop input: "+inp(p[12])+"; run-on "+ms(le16(p,13))+".");
+        if(le16(p,3)<5&&!p[5])L.push("A pulse this short is the node-init self-test.");
+      }else if(n>=2)L.push("Driver "+p[1]+": fire by its stored rule, if its lockout has run out.");
+      break;
+    case 0x41:
+      if(n===2)L.push("Driver "+p[1]+": rule cleared.");
+      else if(n>=8){ruleLines(p).forEach(x=>L.push(x));if(n!==48&&n!==49)L.push("The game sends this command with 48 bytes (49 from the D&amp;D library); this one has "+n+".");}
+      break;
+    case 0x4d:if(n>=2)L.push("Driver "+p[1]+" off.");break;
+    case 0x4c:if(n>=4)L.push("Driver output "+p[1]+" as a lamp: brightness 0x"+hx(p[2])+", fade "+p[3]+".");break;
+    case 0x43:if(n===11)L.push("At most "+p[1]+" drivers in their pulse at once; service order "+p.slice(2).join(", ")+".");else if(n===2)L.push("Read the pulse limit and the first "+p[1]+" entries of the service order.");break;
+    case 0x31:
+      if(n>=18)L.push("Motor "+p[1]+": move "+((le16(p,2)<<16)>>16)+" steps; top speed "+le32(p,4)+", acceleration "+le32(p,8)+", deceleration "+le32(p,12)+".");
+      else if(n>=6)L.push("Motor "+p[1]+": move "+((le16(p,2)<<16)>>16)+" steps; top speed "+(n>=8?le32(p,4):le16(p,4))+". The tmc5041node form has 18 bytes.");
+      break;
+    case 0x32:
+      if(n>=19){
+        L.push("Motor "+p[1]+": home distance "+le16(p,3)+" steps, home speed "+le32(p,9)+"; position "+(p[2]?"kept":"not kept")+" across homing.");
+        const lim=b=>b&0x40?"motor "+((b>>1)&0x1f)+" side "+(b&1):"none";
+        L.push("Limit inputs: "+lim(p[5])+"; "+lim(p[6])+".");
+        L.push("Run current "+(p[7]>>3)+"/32, hold current "+(p[8]>>3)+"/32; stall threshold "+((p[13]<<24)>>24)+"; "+le16(p,14)+", "+le16(p,16)+"; a new move "+(p[18]?"replaces":"is refused during")+" a running one.");
+      }else if(n>=2)L.push("Motor "+p[1]+". The tmc5041node set-up has 19 bytes; this one has "+n+".");
+      break;
+    case 0x33:if(n>=2)L.push("Stop motor "+p[1]+".");break;
+    case 0x34:if(n>=3)L.push("Home motor "+p[1]+", towards the "+(((p[2]<<24)>>24)?"negative":"positive")+" side.");break;
+    case 0x36:if(n>=2)L.push("Motor drivers "+(p[1]?"off":"on")+".");break;
+    case 0x14:if(n>=5)L.push(le16(p,1)+" LED channels, "+le16(p,3)+" inputs.");break;
+    case 0x44:if(n>=2)L.push("Fault detection "+(p[1]?"on":"off")+".");break;
+    case 0x46:if(n>=3)L.push("Driver fault mask 0x"+hx(le16(p,1),4)+".");break;
+    case 0x48:if(n>=3)L.push("Fault detection time "+ms(le16(p,1))+".");break;
+    case 0x70:if(n>=4)L.push("Input "+p[1]+": debounce "+p[2]+" ticks on, "+p[3]+" ticks off.");break;
+    case 0x71:if(n>=9){const c=[];for(let b=0;b<64;b++)if((p[1+(b>>3)]>>(b&7))&1)c.push(b);L.push("Inputs that raise a service request: "+(c.join(", ")||"none")+".");}break;
+    case 0xc0:
+      if(n>=5&&p[3]===0xff){const r=[];for(let k=4;k+1<n;k+=2)r.push("ch "+(le16(p,1)+(k-4)/2)+" → "+hx(p[k+1])+" fade "+p[k]);L.push(r.join("; ")+".");}
+      else if(n>=5)L.push("Channels "+le16(p,1)+" to "+(le16(p,1)+n-5)+", fade "+p[3]+": "+p.slice(4).map(b=>hx(b)).join(" ")+".");
+      break;
+    case 0xc1:if(n>=7)L.push("LEDs "+p[1]+" to "+p[2]+": colour "+hx(p[3])+" "+hx(p[4])+" "+hx(p[5])+", fade "+p[6]+".");break;
+    case 0xc3:case 0xc4:if(n>=5)L.push((cmd===0xc3?"Stop":"Start")+" effects, mask 0x"+hx(le32(p,1),8)+".");break;
+    case 0xf0:if(n>=2){
+      const m=p[1]>>4,v=p[1]&15,f=[];
+      if(m&1)f.push("service request "+(v&1?"set":"cleared"));
+      if(m&2)f.push("answering polls "+(v&2?"enabled":"disabled"));
+      if(m&12)f.push("flag bits 2-3 written (no known use)");
+      L.push("Mask "+m+", values "+v+": "+(f.join("; ")||"nothing written")+".");}break;
+    case 0xf2:if(n>=2)L.push("Board block bytes "+(p[1]>0x38?0:p[1])+" to "+((p[1]>0x38?0:p[1])+7)+".");break;
+    case 0xf4:if(n>=2)L.push("Page part "+p[1]+", "+(n-2)+" data bytes.");break;
+    case 0xf5:if(n>=3)L.push("Application: sum of flash 0x"+hx(p[1]<<8,4)+", "+(p[2]<<8)+" bytes.");break;
+    case 0xf6:if(n>=3)L.push("Erase sectors "+p[1]+" to "+p[2]+".");break;
+    case 0xf7:if(n>=2)L.push("Program the page at 0x"+hx(p[1]<<8,4)+".");break;
+    case 0xf9:if(n>=2)L.push("Half "+p[1]+".");break;
+  }
+  if((cmd&0xf8)===0x38)L.push("Motor "+(cmd&7)+".");
+  return L;
+}
+const FAULT=[[0,"restarted: power-on"],[1,"restarted: reset pin or software"],[2,"restarted: watchdog"],[3,"restarted: brown-out"],[4,"receive overrun"],[5,"framing error"],[6,"break"],[7,"bit 7"],[8,"message too long"],[13,"checksum error"],[15,"driver or lamp service failed"],[16,"bit 16"],[17,"unknown command"],[18,"tick overrun"],[19,"inputs not valid yet"],[20,"message buffers full"]];
+const BSTAT=[[0,"receive error (game side)"],[2,"a board did not answer"],[3,"unexpected byte from the boards"],[4,"bridge restarted"],[5,"unknown bridge command"],[6,"frame from the game timed out"],[8,"reset: power-on"],[9,"reset: reset pin"],[10,"reset: watchdog"],[11,"reset: brown-out"],[12,"reset: software"],[13,"game port framing"],[14,"game port noise"],[15,"game port overrun"],[16,"game port break"],[17,"node port framing"],[18,"node port noise"],[19,"node port overrun"],[20,"node port break"]];
+const bitsOf=(w,T)=>T.filter(t=>(w>>>t[0])&1).map(t=>t[1]).join("; ")||"none";
+function replyLines(p,d){
+  const cmd=p[0],L=[],n=d.length;
+  if(cmd===0xfe&&n>=10){
+    L.push((d[0]&0x80?"Boot loader running":"Application running")+" (flag 0x"+hx(d[0])+"); version "+d[1]+"."+d[2]+"."+d[3]+"; MCU part id 0x"+hx(le32(d,4),8)+"; "+le16(d,8)+" ticks/s"+(n>=11?"; image id "+d[10]:"")+".");
+    if(!le16(d,8))L.push("Tick rate 0: the game sends no timed command to this board.");
+    else if(le16(d,8)!==1280&&le16(d,8)!==60&&le16(d,8)!==2000)L.push("No 1.37.0 firmware reports this tick rate (they send 1280, 60 or 2000).");
+  }else if(cmd===0xff&&n>=8){const f=le32(d,4);L.push(le32(d,0)+" messages since the last status. Fault word 0x"+hx(f,8)+": "+bitsOf(f,FAULT)+"."+((f&0x8010211f)>>>0?" The game counts this as a fault (mask 0x8010211f).":""));}
+  else if((cmd===0x11||cmd===0x10)&&n>=8){
+    const c=[];for(let b=0;b<64;b++)if(!((d[b>>3]>>(b&7))&1))c.push(b);
+    L.push(c.length?"Closed inputs (bit 0): "+c.join(", ")+".":"All 64 inputs open.");
+    if(n>=10){const a=le16(d,8);L.push("Last input change "+((a&0x7fff)===0x7fff?"at least ":"")+ms(a&0x7fff)+" ago; "+(a&0x8000?"no service request pending":"a service request is pending")+".");}
+  }
+  else if(cmd===0xf9&&n>=12&&p[1]===0)L.push("Part number "+String(le32(d,8)).padStart(9,"0")+".");
+  else if(cmd===0xf9&&n>=8&&p[1]===1)L.push("Time stamps "+new Date(le32(d,0)*1000).toISOString().slice(0,10)+" and "+new Date(le32(d,4)*1000).toISOString().slice(0,10)+".");
+  else if(cmd===0xfd&&n>=12)L.push("Serial bytes "+d.slice(0,8).map(x=>hx(x)).join(" ")+"; part number "+String(le32(d,8)).padStart(9,"0")+".");
+  else if((cmd&0xf8)===0x38&&n>=5){const f=d[4],s=[];if(f&1)s.push("set up");s.push(f&2?"moving":"stopped");if(f&0x20)s.push("a move was refused");if(f&0x40)s.push("homing");if(f&0x18)s.push("event bits 0x"+hx(f&0x18));L.push("First value "+((le16(d,0)<<16)>>16)+", progress "+((le16(d,2)<<16)>>16)+"; flags 0x"+hx(f)+": "+s.join(", ")+".");}
+  else if(cmd===0xf5&&n>=2)L.push("Sum / check value 0x"+hx(le16(d,0),4)+".");
+  else if(cmd===0xf7&&n>=1)L.push(d[0]?"Page refused ("+d[0]+").":"Page programmed.");
+  else if(cmd===0xfa&&n===1)L.push("Image id "+d[0]+".");
+  else if(cmd===0xfa&&n===2)L.push("Unused stack figure "+le16(d,0)+".");
+  else if(cmd===0x47&&n>=2)L.push("Driver fault mask 0x"+hx(le16(d,0),4)+".");
+  else if(cmd===0x30&&n>=1)L.push("Moving motors: "+([0,1,2,3,4,5].filter(k=>(d[0]>>k)&1).join(", ")||"none")+".");
+  return L;
+}
+const BR={0:["poll",1],3:["version",3],4:["boot hold (break on the node side)",0],5:["status word",4],6:["reply time",0],7:["node power",0],8:["amplifier power",0],9:["backbox lamp",0],0xa:["state",2],0xb:["backbox lamp PWM period",0],0xc:["restart the bridge",0],0xd:["key exchange",0]};
+function sum(a){let s=0;for(const b of a)s=(s+b)&255;return s;}
+function decode(){
+  const out=$("#dec-out"),b=parseHex($("#dec-in").value),r=parseHex($("#dec-reply").value)||[];
+  if(!b||!b.length){out.innerHTML='<p class="note">Enter some hex bytes.</p>';return;}
+  let h="";const ul=a=>a.length?"<ul>"+a.map(x=>"<li>"+x+"</li>").join("")+"</ul>":"";
+  const isNode=(b[0]&0x80)&&b.length>=5&&b.length===b[1]+3&&sum(b.slice(0,-1))===0;
+  const isBridge=!(b[0]&0x80)&&b[0]<=0x0d&&((b[0]===0&&b.length===1)||(b.length>=2&&b.length===b[1]+2));
+  if(isBridge){
+    const info=BR[b[0]]||["unknown: status bit 5",0],cells=[[hx(b[0]),"cmd",info[0]]];
+    if(b.length>1)cells.push([hx(b[1]),"len","data bytes"]);
+    b.slice(2).forEach(x=>cells.push([hx(x),"arg","data"]));
+    const L=["Bridge command <code>"+hx(b[0])+"</code>: "+esc(info[0])+". Reply: "+(b[0]===0xd&&b.length>2&&(b[2]&15)?"4 raw bytes":info[1]?info[1]+" raw byte"+(info[1]>1?"s":""):"none")+"."];
+    if(b[0]===7||b[0]===8||b[0]===4)L.push((b[2]?"On":"Off")+".");
+    if(b[0]===9&&b.length>=4)L.push("Brightness 0x"+hx(b[2])+", fade "+b[3]+(b[3]?"":" (at once)")+".");
+    if(b[0]===6&&b.length>=4)L.push("Reply time "+le16(b,2)+" × 2400 timer counts.");
+    if(b[0]===0xb&&b.length>=3)L.push("Period 0x"+hx(0xffff>>b[2],4)+".");
+    if(b[0]===0xd&&b.length>=7)L.push((b[2]&15?"Hash request, mode "+(b[2]&15):"Store")+", slot "+((b[2]>>4)&3)+", value 0x"+hx(le32(b,3),8)+".");
+    h+='<div class="dir">game → bridge</div>'+strip(cells)+ul(L);
+    if(r.length){
+      const R=[];
+      if(b[0]===0)R.push(r[0]?"Node "+r[0]+" wants service.":"No board wants service.");
+      if(b[0]===3&&r.length>=3)R.push("Bridge version "+r[0]+"."+r[1]+"."+r[2]+".");
+      if(b[0]===5&&r.length>=4){const w=le32(r,0);R.push("Status word 0x"+hx(w,8)+": "+bitsOf(w,BSTAT)+"."+(w&0x1f10?" The game counts this as a fault (mask 0x1f10).":""));}
+      if(b[0]===0xa&&r.length>=2)R.push("Node power "+(r[0]&1?"on":"off")+"; amplifier power "+(r[0]&2?"on":'<span class="bad">off: the game runs its power-fault path</span>')+"; clock from the "+(r[0]&4?"oscillator":"internal source")+"; PLL "+(r[0]&16?"locked":"not locked")+". Backbox lamp level "+r[1]+".");
+      h+='<div class="dir">bridge → game</div>'+strip(r.map(x=>[hx(x),"data",""]))+ul(R);
+    }
+    out.innerHTML=h;return;
+  }
+  let p,addr,rl;
+  if(isNode){p=b.slice(2,-2);addr=b[0]&0x3f;rl=b[b.length-1];}
+  else{
+    p=b;addr=(parseInt($("#dec-addr").value,10)||0)&0x3f;
+    const row0=cmdRow(p[0]),auto=row0?parseInt(row0[2],10):NaN,given=parseInt($("#dec-rl").value,10);
+    const data=!isNaN(given)?given:(!isNaN(auto)?auto:0);
+    rl=data?data+2:0;
+  }
+  const head=[0x80|addr,p.length+1],cs=(256-sum(head.concat(p)))&255,row=cmdRow(p[0]);
+  const cells=[[hx(head[0]),"addr",addr?"node "+addr:"broadcast"],[hx(head[1]),"len","cmd + args + checksum"],[hx(p[0]),"cmd",row?"command "+row[0]:"unknown"]];
+  p.slice(1).forEach((x,i)=>cells.push([hx(x),"arg","["+(i+1)+"]"]));
+  cells.push([hx(cs),"sum","checksum"],[hx(rl),"rl",rl?"reply: "+(rl-2)+" data + 2":"no reply"]);
+  const L=[];
+  L.push(isNode?'Full node frame, <span class="good">checksum good</span>.':"Read as a command with arguments. The frame below is built for node "+addr+".");
+  if(isNode&&(b[0]&0x40))L.push("Bit 6 of the address byte: scrambled payload. The fields below are then not plain.");
+  if(!addr&&p[0]!==0xf0&&p[0]!==0xf1)L.push("Broadcast: boards act on f0 and f1 only.");
+  if(p.length>0x82)L.push('<span class="bad">Longer than a board accepts (0x84 bytes after the address).</span>');
+  if(row)L.push("<code>"+esc(row[0])+"</code>: "+esc(row[3])+" <span class=\"note\">Handler read in: "+esc(row[4])+".</span>");
+  else L.push('<span class="bad">No handler for this command byte was read. A board sets fault bit 17 for a command it does not know.</span>');
+  h+='<div class="dir">game → bridge → node</div>'+strip(cells)+'<pre class="code">'+head.concat(p,[cs,rl]).map(x=>hx(x)).join(" ")+"</pre>"+ul(L.concat(payloadLines(p)));
+  if(r.length){
+    const R=[];
+    if(!rl)R.push('<span class="bad">This message asks for no reply.</span>');
+    else if(r.length!==rl)R.push('<span class="bad">'+r.length+" reply bytes, but the frame asks for "+rl+".</span>");
+    if(r.length>=2){
+      const d=r.slice(0,-2),st=r[r.length-1],ok=sum(r.slice(0,-1))===0,filler=(st&4)&&d.length&&d[0]===0xee;
+      if(filler)R.push("The bridge's filler for a board that did not answer: <code>ee</code>, then <code>55</code>.");
+      else R.push(ok?'<span class="good">Reply checksum good.</span>':'<span class="bad">Reply checksum wrong: expected '+hx((256-sum(d))&255)+".</span>");
+      const s=[];if(st&1)s.push("receive error on the game's port");if(st&2)s.push("the bridge's status word has upper bits set: the game reads it with bridge command 05");if(st&4)s.push("the board did not answer (error 1, no retry)");if(st&8)s.push("bit 3, which the 0.5.0 bridge never sends");if(st&0x10)s.push("the bridge has restarted");if(st&0x20)s.push("unknown bridge command");if(st&0x40)s.push("a frame from the game timed out");
+      R.push("Status 0x"+hx(st)+": "+(s.join("; ")||(st?"bit 7, no known meaning":"good"))+".");
+      const rc=d.map((x,i)=>[hx(x),"data","["+i+"]"]);rc.push([hx(r[r.length-2]),"sum","checksum"],[hx(st),"st","status"]);
+      h+='<div class="dir">node → bridge → game</div>'+strip(rc)+ul(R.concat(st&4?[]:replyLines(p,d)));
+    }else h+=ul(R);
+  }
+  out.innerHTML=h;
+}
+const EX=[
+["read inputs, node 8","88 02 11 65 0c","ff f7 ff ff ff ff ff ff 40 01 cf 00"],
+["version (pinnode 1.37.0)","fe","00 01 25 00 00 00 00 00 00 05 01 d4 00"],
+["status after a reset","ff","01 00 00 00 04 00 00 00 fb 00"],
+["no answer","fe","ee 55 55 55 55 55 55 55 55 55 55 55 04"],
+["flipper rule (bytes not recorded shown as 00)","41 05 f0 28 00 1e 20 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 59 00 00 50 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00",""],
+["driver pulse with hold","40 00 80 40 00 48 40 1f",""],
+["LED bitmap","86 80 00 34 ff 00 00",""],
+["LED with fade","96 80 00 b0 00 ff 00 0a",""],
+["LED page 4","93 84 4b fe",""],
+["stepper set-up","32 00 00 3a 20 41 40 88 00 58 02 00 00 0a 64 00 7d 00 00",""],
+["stepper move (example ramps)","31 00 6a ff 14 05 00 00 e8 03 00 00 e8 03 00 00 00 00",""],
+["service request on","f0 11",""],
+["bridge: state","0a 00","07 00"],
+["bridge: status after power-up","05 00","10 01 00 00"],
+["bridge: poll","00","08"]
+];
+$("#dec-ex").innerHTML=EX.map((e,i)=>'<button type="button" class="chip" data-ex="'+i+'">'+esc(e[0])+"</button>").join("");
+$("#dec-ex").addEventListener("click",ev=>{const b=ev.target.closest("[data-ex]");if(!b)return;const e=EX[+b.dataset.ex];$("#dec-in").value=e[1];$("#dec-reply").value=e[2];$("#dec-rl").value="";decode();});
+["dec-in","dec-reply","dec-addr","dec-rl"].forEach(id=>$("#"+id).addEventListener("input",decode));
+decode();
+})();
+</script>
+</html>

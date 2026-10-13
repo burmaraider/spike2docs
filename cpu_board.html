@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SPIKE2 CPU Board</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&family=Noto+Sans+Mono:wght@400;500&display=swap">
+<style>
+:root{color-scheme:light;--bg:#ffffff;--panel:#f5f7f9;--ink:#1f2429;--muted:#5d6873;--line:#d4dae0;--link:#0a5fc4;--cl:#1c69c9;--cl-bg:#e3edfa;--sv:#17795a;--sv-bg:#dcf2e8;--gm:#9c5600;--gm-bg:#faecd6;--ex:#6f47ad;--ex-bg:#eee7f8;--hot:#c0352b;--hot-bg:#fbe6e3;--sans:"Noto Sans","Open Sans",system-ui,sans-serif;--mono:"Noto Sans Mono",ui-monospace,Menlo,Consolas,monospace}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14181d;--panel:#1b2128;--ink:#e4e8ec;--muted:#98a3ae;--line:#343d47;--link:#6fb0ff;--cl:#6fb0ff;--cl-bg:#172b45;--sv:#5fcfa4;--sv-bg:#12332a;--gm:#e6aa55;--gm-bg:#3a2a10;--ex:#b99cf0;--ex-bg:#2b2140;--hot:#ff7d70;--hot-bg:#3d1a17;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#14181d;--panel:#1b2128;--ink:#e4e8ec;--muted:#98a3ae;--line:#343d47;--link:#6fb0ff;--cl:#6fb0ff;--cl-bg:#172b45;--sv:#5fcfa4;--sv-bg:#12332a;--gm:#e6aa55;--gm-bg:#3a2a10;--ex:#b99cf0;--ex-bg:#2b2140;--hot:#ff7d70;--hot-bg:#3d1a17;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.6 var(--sans)}
+[hidden]{display:none!important}
+a{color:var(--link)}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--link);outline-offset:2px}
+code,.m{font-family:var(--mono);font-size:0.88em}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+.top-in{max-width:1080px;margin:0 auto;padding:10px 20px;display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 28px}
+.brand{font:700 1.5rem/1 var(--sans);letter-spacing:-0.01em}
+.tabs{display:flex;flex-wrap:wrap;gap:2px 4px;flex:1}
+.tabs button{background:none;border:0;padding:6px 10px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--ink)}
+#theme{background:none;border:1px solid var(--line);border-radius:999px;padding:2px 12px;font-size:0.8rem;color:var(--muted);cursor:pointer}
+.wrap{max-width:1080px;margin:0 auto;padding:28px 20px 80px}
+.view{display:flex;flex-direction:column;gap:44px;scroll-margin-top:120px}
+.view>section{display:flex;flex-direction:column;gap:14px;min-width:0}
+h1{font:700 2rem/1.2 var(--sans);margin:0;text-wrap:balance}
+h2{font:700 1.5rem/1.25 var(--sans);margin:0;text-wrap:balance}
+h3{font:700 1rem/1.3 var(--sans);margin:0}
+p{margin:0;max-width:72ch}
+ul,ol{margin:0;padding-left:22px;max-width:72ch}
+li{margin:3px 0}
+.note{color:var(--muted);font-size:0.9rem}
+.lab{font:600 0.72rem var(--sans);letter-spacing:0.06em;text-transform:uppercase;color:var(--muted)}
+dl.feat{display:grid;grid-template-columns:minmax(0,13rem) minmax(0,1fr);gap:10px 24px;margin:0;max-width:60rem}
+dl.feat dt{font-weight:700}
+dl.feat dd{margin:0}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:0.9rem}
+th,td{text-align:left;vertical-align:top;padding:7px 14px 7px 0;border-bottom:1px solid var(--line)}
+th{font:600 0.72rem var(--sans);letter-spacing:0.06em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+td.n{font-family:var(--mono);font-size:0.84rem;white-space:nowrap}
+td.w{font-family:var(--mono);font-size:0.84rem}
+pre.code{font:400 0.8rem/1.5 var(--mono);background:var(--panel);border:1px solid var(--line);border-radius:3px;padding:10px 12px;margin:0;overflow-x:auto;white-space:pre;max-width:100%}
+.card{border:1px solid var(--line);background:var(--panel);padding:14px 16px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.card p{font-size:0.93rem;max-width:none}
+.duo{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;align-items:start}
+.trio{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;align-items:start}
+.draw{overflow-x:auto;border:1px solid var(--line);background:var(--bg);padding:8px;min-width:0}
+.draw svg{display:block;width:100%;min-width:680px;height:auto}
+svg text{font-family:var(--sans)}
+.t{font:600 13px var(--sans);fill:var(--ink)}
+.s{font:400 11px var(--mono);fill:var(--muted)}
+.mid{text-anchor:middle}
+.g-cl rect{fill:var(--cl-bg);stroke:var(--cl);stroke-width:1.3}
+.g-sv rect{fill:var(--sv-bg);stroke:var(--sv);stroke-width:1.3}
+.g-gm rect{fill:var(--gm-bg);stroke:var(--gm);stroke-width:1.3}
+.g-ex rect{fill:var(--ex-bg);stroke:var(--ex);stroke-width:1.3}
+.g-nt rect{fill:var(--panel);stroke:var(--muted);stroke-width:1.3}
+.proc{fill:none;stroke:var(--muted);stroke-width:1.3;stroke-dasharray:7 5}
+.e{stroke:var(--ink);stroke-width:1.3;fill:none}
+.bus{stroke:var(--ink);stroke-width:3;fill:none}
+/* evidence tags */
+.ev{display:inline-block;font:600 0.68rem var(--sans);letter-spacing:0.05em;text-transform:uppercase;border:1px solid;border-radius:3px;padding:0 6px;line-height:1.5;white-space:nowrap;vertical-align:1px}
+.ev.code{color:var(--cl);background:var(--cl-bg);border-color:var(--cl)}
+.ev.meas{color:var(--sv);background:var(--sv-bg);border-color:var(--sv)}
+.ev.model{color:var(--gm);background:var(--gm-bg);border-color:var(--gm)}
+.ev.unk{color:var(--hot);background:var(--hot-bg);border-color:var(--hot)}
+.ev.xref{color:var(--ex);background:var(--ex-bg);border-color:var(--ex)}
+.ev.fw{color:var(--ink);background:var(--panel);border-color:var(--ink)}
+/* byte strips */
+.bytes{display:flex;flex-wrap:wrap;gap:3px}
+.by{display:flex;flex-direction:column;gap:1px;min-width:46px;border:1px solid var(--line);background:var(--panel);padding:4px 7px}
+.by b{font:500 0.95rem var(--mono)}
+.by span{font:400 0.68rem/1.25 var(--sans);color:var(--muted);max-width:11rem}
+.by.r-addr{background:var(--cl-bg);border-color:var(--cl)}
+.by.r-cmd{background:var(--ex-bg);border-color:var(--ex)}
+.by.r-arg,.by.r-data{background:var(--gm-bg);border-color:var(--gm)}
+.by.r-sum{background:var(--sv-bg);border-color:var(--sv)}
+.by.r-st{background:var(--hot-bg);border-color:var(--hot)}
+.by.r-rl{border-style:dashed;border-color:var(--muted)}
+.dir{font:600 0.72rem var(--mono);color:var(--muted);margin-top:4px}
+/* bit field */
+table.bits{width:auto}
+table.bits td,table.bits th{border:1px solid var(--line);padding:5px 12px;text-align:center}
+table.bits td{font-family:var(--mono);font-size:0.84rem}
+/* commands */
+.pills{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.pills button{background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:4px 13px;font-size:0.9rem;cursor:pointer}
+.pills button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+input[type=text],textarea,select{width:100%;padding:7px 9px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:400 0.9rem var(--mono);border-radius:0}
+textarea{resize:vertical;min-height:3.2em}
+.pills input{max-width:16rem}
+.row{display:grid;grid-template-columns:minmax(0,1fr) 7rem 7rem;gap:10px;align-items:end}
+.row label,.fld label{display:flex;flex-direction:column;gap:3px}
+.fld{display:flex;flex-direction:column;gap:10px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:500 0.8rem var(--mono);background:var(--panel);border:1px solid var(--line);border-radius:3px;padding:2px 7px;cursor:pointer;text-align:left}
+.chip:hover{border-color:var(--ink)}
+#dec-out{display:flex;flex-direction:column;gap:12px}
+#dec-out ul{font-size:0.92rem;max-width:none}
+.bad{color:var(--hot);font-weight:600}
+.good{color:var(--sv);font-weight:600}
+ol.steps{list-style:none;padding:0;counter-reset:st;display:flex;flex-direction:column;max-width:none}
+ol.steps li{counter-increment:st;display:grid;grid-template-columns:2.2em minmax(0,1fr);gap:4px;border-left:3px solid var(--line);padding:6px 10px;margin:0}
+ol.steps li::before{content:counter(st);font:500 0.85rem var(--mono);color:var(--muted)}
+@media (max-width:800px){.duo,.trio{grid-template-columns:minmax(0,1fr)}dl.feat{grid-template-columns:minmax(0,1fr);gap:2px}dl.feat dd{margin-bottom:12px}h1{font-size:1.6rem}.row{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.row label:first-child{grid-column:1/-1}.top-in,.wrap{padding-inline:16px}}
+.pages{display:flex;flex-wrap:wrap;gap:2px 14px;font-size:0.82rem;width:100%}
+.pages a{color:var(--muted);text-decoration:none}
+.pages a:hover,.pages a[aria-current="page"]{color:var(--ink);text-decoration:underline}
+.ev.card{color:var(--ink);background:var(--panel);border-color:var(--ink)}
+</style>
+<div class="top"><div class="top-in">
+<span class="brand">SPIKE2 CPU Board</span>
+<div class="tabs" role="tablist">
+<button role="tab" data-view="overview">Overview</button><button role="tab" data-view="devices">Devices</button><button role="tab" data-view="i2c">I2C</button><button role="tab" data-view="switches">Switches</button><button role="tab" data-view="displays">Displays</button><button role="tab" data-view="sound">Sound</button><button role="tab" data-view="open">Open</button>
+</div>
+<button id="theme" type="button" aria-label="Switch colour theme">theme</button>
+<nav class="pages" aria-label="Pages"><a href="index.html">Home</a><a href="cpu_board.html" aria-current="page">CPU board</a><a href="node_boards.html">Node boards</a><a href="lcd_node.html">LCD node</a><a href="sd_card.html">SD card</a></nav>
+</div></div>
+
+<div class="wrap">
+<div class="view" id="overview" role="tabpanel">
+<section>
+<h1>The CPU board, from the game's side</h1>
+<p>The CPU board is a small Linux computer. One program on it, <code>game</code>, is the pinball machine: rules, display, sound and the conversation with the node boards. This page lists what that program touches on the board, and what each thing answers.</p>
+<p class="note">Read this first: nothing here was captured from, or run on, real hardware. Everything is read from the software on game cards and from what that software does when it runs against a simulator. Each statement carries one of the tags below.</p><div class="tbl"><table><thead><tr><th>Tag</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><span class="ev code">game</span></td><td>Read from the ARM code of a game executable. The title and address are given.</td></tr>
+<tr><td><span class="ev card">card</span></td><td>Read from a file on a card image: a configuration file, a file name, a table in a file.</td></tr>
+<tr><td><span class="ev meas">measured</span></td><td>Seen when the recompiled game runs against this project's simulator: what it opens, sends and asks for.</td></tr>
+<tr><td><span class="ev xref">cross-check</span></td><td>Agrees with <a href="https://github.com/bdash/spike">bdash/spike</a>, which talks to real hardware.</td></tr>
+<tr><td><span class="ev model">model</span></td><td>A choice made by this project's simulator. A real machine does otherwise or is not known to do the same.</td></tr>
+<tr><td><span class="ev unk">unknown</span></td><td>Not established. Do not build on it.</td></tr>
+</tbody></table></div>
+</section>
+<section>
+<h2>The pieces</h2>
+<div class="draw"><svg viewBox="0 0 900 360" role="img" aria-label="The game process on the CPU board and the devices it opens: the node bus serial port, the SPI switch inputs, the I2C bus with an EEPROM, a hardware-address chip and two audio codecs, the framebuffers, and two ALSA sound cards.">
+<rect class="proc" x="10" y="14" width="880" height="332"/>
+<text class="s" x="22" y="32">CPU board (Linux 3.14, Yocto userland)</text>
+<g class="g-cl"><rect x="30" y="120" width="170" height="110"/><text class="t" x="42" y="146">game</text><text class="s" x="42" y="164">ELF32 ARMv7-A,</text><text class="s" x="42" y="179">hard float</text><text class="s" x="42" y="200">main, render, nodebus,</text><text class="s" x="42" y="215">cpuspi, sound threads</text></g>
+<g class="g-ex"><rect x="300" y="44" width="200" height="46"/><text class="t" x="312" y="64">/dev/ttymxc1</text><text class="s" x="312" y="80">node bus, 460800 8N1</text></g>
+<g class="g-nt"><rect x="300" y="100" width="200" height="46"/><text class="t" x="312" y="120">/dev/spidev1.0</text><text class="s" x="312" y="136">cabinet switches, 8 bytes</text></g>
+<g class="g-gm"><rect x="300" y="156" width="200" height="46"/><text class="t" x="312" y="176">/dev/i2c-1</text><text class="s" x="312" y="192">four chips</text></g>
+<g class="g-sv"><rect x="300" y="212" width="200" height="46"/><text class="t" x="312" y="232">EGL / OpenGL ES</text><text class="s" x="312" y="248">display 0, and 2 on some</text></g>
+<g class="g-sv"><rect x="300" y="268" width="200" height="46"/><text class="t" x="312" y="288">ALSA</text><text class="s" x="312" y="304">two cards, two mixers</text></g>
+<path class="e" d="M200 150 L300 67"/><path class="e" d="M200 162 L300 123"/><path class="e" d="M200 175 H300"/><path class="e" d="M200 190 L300 235"/><path class="e" d="M200 205 L300 291"/>
+<g class="g-ex"><rect x="600" y="44" width="270" height="46"/><text class="t" x="612" y="64">net bridge, then the node boards</text><text class="s" x="612" y="80">see the Node boards page</text></g>
+<g class="g-nt"><rect x="600" y="100" width="270" height="46"/><text class="t" x="612" y="120">DIP, service buttons, door, headphones</text><text class="s" x="612" y="136">"node 0"</text></g>
+<g class="g-gm"><rect x="600" y="156" width="270" height="46"/><text class="t" x="612" y="176">EEPROM 0x50, address chip 0x5b</text><text class="s" x="612" y="192">codecs 0x0a and 0x2a</text></g>
+<g class="g-sv"><rect x="600" y="212" width="270" height="46"/><text class="t" x="612" y="232">LCD panel; a second panel on some</text><text class="s" x="612" y="248">/dev/fb0, /dev/fb2</text></g>
+<g class="g-sv"><rect x="600" y="268" width="270" height="46"/><text class="t" x="612" y="288">backbox and cabinet speakers</text><text class="s" x="612" y="304">headphone jack</text></g>
+<path class="e" d="M500 67 H600"/><path class="e" d="M500 123 H600"/><path class="e" d="M500 179 H600"/><path class="e" d="M500 235 H600"/><path class="e" d="M500 291 H600"/>
+</svg></div>
+</section>
+<section>
+<h2>The computer</h2>
+<dl class="feat">
+<dt>Processor</dt><dd>A 32-bit ARM. The game is an ELF32 ARMv7-A executable, hard-float, ARM mode only. The serial ports are named <code>ttymxc</code>, the video decoder is <code>/dev/mxc_vpu</code>, and the card carries <code>vpu_fw_imx6d.bin</code>: the names of an NXP i.MX6. <span class="ev card">card</span></dd>
+<dt>Kernel</dt><dd>Linux 3.14.28. The module folder on the card is <code>3.14.28_1.0.0_ga-wandboard+g08f5291</code>; the device tree is <code>stern-spike2.dtb</code>. <span class="ev card">card</span></dd>
+<dt>System</dt><dd>Yocto Poky 1.8.2 (<code>/etc/issue</code>), glibc 2.21, libstdc++ 6.0.20. The platform release is in <code>/usr/local/spike/VERSION.txt</code> ("SPIKE v2.7.0" on the Star Wars 1.31.0 card). <span class="ev card">card</span></dd>
+<dt>The game</dt><dd>Compiled with GCC 4.9.2, stripped, linked against 25 shared libraries, about 650 imported functions. It starts some twenty threads; the ones that touch hardware are the render thread (display), <code>nodebus</code> (serial port), <code>cpuspi</code> (switches) and the sound engine's. <span class="ev code">game</span> <span class="ev meas">measured</span></dd>
+</dl>
+</section>
+</div>
+
+<div class="view" id="devices" role="tabpanel">
+<section>
+<h1>What the game opens</h1>
+<p>Every device node, system file and outside connection the four games were seen to reach for, in the order a start-up meets them.</p>
+<div class="tbl"><table><thead><tr><th>Path</th><th>What it is</th><th>What the game does with it</th><th>Titles</th></tr></thead><tbody>
+<tr><td class="n">/dev/mxc_vpu</td><td>i.MX video processing unit</td><td>Opened read-write at the very start. When it is absent the game carries on and decodes video another way. <span class="ev meas">measured</span></td><td>D&amp;D, Star Wars, Batman</td></tr>
+<tr><td class="n">/dev/spidev1.0</td><td>SPI: the cabinet switches</td><td>Opened by the <code>cpuspi</code> thread: 100 kHz, mode 3, then an endless loop of 8-byte full-duplex transfers. <span class="ev code">game</span> <span class="ev xref">cross-check</span></td><td>all</td></tr>
+<tr><td class="n">/dev/i2c-1</td><td>I2C bus 1</td><td>Opened many times, once per chip conversation; see the I2C tab. <span class="ev code">game</span></td><td>all</td></tr>
+<tr><td class="n">/dev/mxc_hdmi</td><td>HDMI transmitter</td><td>Opened, one <code>ioctl</code> (0x4803), closed. Star Wars 0x3208ac. <span class="ev code">game</span></td><td>Star Wars</td></tr>
+<tr><td class="n">/sys/class/graphics/fb2/blank</td><td>blanking of framebuffer 2</td><td>Written. <span class="ev code">game</span></td><td>Star Wars</td></tr>
+<tr><td class="n">/dev/fb2, /dev/fb0</td><td>framebuffers</td><td>Video timings are set on both (<code>FB_SetTiming</code>, 0x4ee3b0). On failure it prints "failed to open device" and carries on. <span class="ev code">game</span></td><td>Star Wars</td></tr>
+<tr><td class="n">/dev/ttymxc1</td><td>serial port of the node bus</td><td>Opened by the <code>nodebus</code> thread, 460800 baud 8N1. Newer builds also call <code>TIOCGSERIAL</code> / <code>TIOCSSERIAL</code> (0x541e, 0x541f) and <code>TIOCMSET</code> (0x5418). <span class="ev code">game</span> <span class="ev meas">measured</span></td><td>all; the three ioctls not in Godzilla</td></tr>
+<tr><td class="n">ALSA <code>sgtl5000main</code>, <code>sgtl5000center</code></td><td>the two sound cards</td><td>PCM playback and the mixers <code>backbox</code> and <code>cabinet</code>; see the Sound tab. <span class="ev code">game</span> <span class="ev card">card</span></td><td>all</td></tr>
+<tr><td class="n">/data, /dump</td><td>writable partitions</td><td>Settings, audits and logs. The game runs <code>/bin/mount -oremount,async /data</code> at start. <span class="ev code">game</span> <span class="ev card">card</span></td><td>all</td></tr>
+<tr><td class="n">shm <code>/log-&hellip;</code>, <code>/CAPS_update</code></td><td>shared memory with other processes</td><td>Opened; nothing is there without those processes. <span class="ev meas">measured</span></td><td>Star Wars, Batman</td></tr>
+<tr><td class="n">netlink socket (domain 16)</td><td>kernel network events</td><td>Opened. <span class="ev meas">measured</span></td><td>Star Wars, Batman</td></tr>
+<tr><td class="n"><code>/bin/hostname SPI-&lt;code&gt;-&lt;serial&gt;</code></td><td>shell command</td><td>Sets the host name from the title's short code and the machine's serial number (<code>SPI-SW-999999</code>, <code>SPI-BAT-999999</code>). <span class="ev meas">measured</span></td><td>Star Wars, Batman</td></tr>
+<tr><td class="n">/dev/mmcblk2p1 on /connectivity</td><td>the connectivity kit's own card</td><td>Named in <code>/etc/fstab</code> and in strings of the game (format, mount). Not followed. <span class="ev card">card</span></td><td></td></tr>
+</tbody></table></div>
+<p class="note">GPIO 75 is exported when the node bus is opened, and RTS is pulsed before a retry; both belong to the bridge and are on the Node boards page.</p>
+</section>
+<section>
+<h2>What the simulator answers</h2>
+<p>The recompilation's runtime provides <code>/dev/spidev1.0</code>, <code>/dev/i2c-1</code>, <code>/dev/ttymxc1</code>, the ALSA cards and the data devices. Everything else in the table fails the way a missing device does (<code>ENOENT</code>, <code>ENOTTY</code>, <code>EAFNOSUPPORT</code>), and shell commands are not executed. All four games reach their main loop that way. <span class="ev model">model</span></p>
+</section>
+</div>
+
+<div class="view" id="i2c" role="tabpanel">
+<section>
+<h1>The I2C bus</h1>
+<p><code>/dev/i2c-1</code> carries four chips the game talks to. It selects a chip by its 7-bit address and uses plain transfers (<code>I2C_RDWR</code>) or SMBus calls.</p>
+<div class="tbl"><table><thead><tr><th>Address</th><th>Chip</th><th>What the game uses it for</th></tr></thead><tbody>
+<tr><td class="n">0x50</td><td>serial EEPROM, 16-bit addressing</td><td>The machine's identity record and non-volatile storage. <span class="ev code">game</span></td></tr>
+<tr><td class="n">0x5b</td><td>hardware-address chip</td><td>Six bytes read one at a time from registers 0x9a..0x9f: the network hardware address. That is where an AT24MAC402-type part keeps its EUI-48. Godzilla 0x005b79d0. <span class="ev code">game</span></td></tr>
+<tr><td class="n">0x0a</td><td>SGTL5000 audio codec</td><td>Sound card <code>sgtl5000main</code>, the backbox speakers. <span class="ev code">game</span> <span class="ev card">card</span></td></tr>
+<tr><td class="n">0x2a</td><td>SGTL5000 audio codec</td><td>Sound card <code>sgtl5000center</code>, the cabinet speaker. <span class="ev code">game</span> <span class="ev card">card</span></td></tr>
+<tr><td class="n">0x68</td><td></td><td>Probed with an SMBus read by D&amp;D, Star Wars and Batman. What answers there on a real board is not known. <span class="ev meas">measured</span> <span class="ev unk">unknown</span></td></tr>
+</tbody></table></div>
+</section>
+<section>
+<h2>The identity record</h2>
+<p>The first 52 bytes of the EEPROM hold who this machine is, lightly scrambled. The game reads them at start (Godzilla 0x003fb484). <span class="ev code">game</span></p>
+<ol class="steps">
+<li><span>Word 0 seeds a generator: <code>state = state * 0x19660d + 1</code> (0x004244a8). The key for a word is <code>state &gt;&gt; 8</code>, and a key of 0 counts as 1.</span></li>
+<li><span>Each of the next twelve words is one record byte multiplied by its key.</span></li>
+<li><span>The twelve bytes are: 0..3 the serial number, 4..7 a model code, 8..9 a 16-bit value, 10..11 the inverted 16-bit sum of bytes 0..9 (0x004d9718).</span></li>
+<li><span>A model code of "999" makes the game use the code compiled into it (0x0070de70; "T7" in Godzilla LE).</span></li>
+</ol>
+<p>The rest of the chip is the game's non-volatile storage; it reads and writes it with a 2-byte offset followed by data.</p>
+<p class="note">A simulated board starts with a blank chip (all 0xFF). The runtime writes an identity record into a blank chip, with serial 999999 and model 999, and never touches one that has a record. With blank settings the game shows its first-boot "Guided Setup". <span class="ev model">model</span></p>
+</section>
+<section>
+<h2>The codecs on the bus</h2>
+<p>Each SGTL5000 takes a 16-bit register address followed by 16-bit big-endian data. At start the game reads <code>CHIP_ANA_CTRL</code> (0x0024) of both (Godzilla 0x00336ccc), cycles codec power and polls up to 250 times for the reset value 0x0111 (0x00336e24), then writes the registers listed in a table (0x00336d1c, table at 0x00660c00). Only registers that differ from reset are written. <span class="ev code">game</span></p>
+<p>What it sets there is on the Sound tab.</p>
+</section>
+</div>
+
+<div class="view" id="switches" role="tabpanel">
+<section>
+<h1>The board's own switches</h1>
+<p>A few inputs are wired to the CPU board and not to a node board: the DIP switches, the service buttons inside the coin door, the door interlock, and the headphone kit. The game reads them over SPI and files them as "node 0".</p>
+<p>The <code>cpuspi</code> thread (Godzilla 0x005b9cc0) sets <code>/dev/spidev1.0</code> to 100 kHz, mode 3, and then exchanges 8 bytes each way without pause: 8 output bytes out (from 0x0085581c), 8 input bytes in (to 0x008557d8). A set bit is an open contact. <span class="ev code">game</span> <span class="ev xref">cross-check</span></p>
+<div class="tbl"><table><thead><tr><th>Input</th><th>Switch</th></tr></thead><tbody>
+<tr><td class="n">0..7</td><td>DIP 1 to DIP 8</td></tr>
+<tr><td class="n">8</td><td>SERVICE SELECT</td></tr>
+<tr><td class="n">9</td><td>SERVICE PLUS</td></tr>
+<tr><td class="n">10</td><td>SERVICE MINUS</td></tr>
+<tr><td class="n">11</td><td>SERVICE BACK</td></tr>
+<tr><td class="n">16</td><td>HEADPHONE DETECT</td></tr>
+<tr><td class="n">17</td><td>HEADPHONE KIT CABLE DETECT</td></tr>
+<tr><td class="n">18</td><td>VOLUME ENCODER 1</td></tr>
+<tr><td class="n">19</td><td>VOLUME ENCODER 2</td></tr>
+<tr><td class="n">23</td><td>COIN DOOR INTERLOCK</td></tr>
+</tbody></table></div>
+<p class="note">Names and numbers are the game's own, from its I/O table, as listed by Star Wars Pro 1.31.0 and Batman 1.14.0. <span class="ev meas">measured</span> How a bit becomes a named switch, and what "active" means for it, is the same as for a node board's inputs: see Inputs on the Node boards page.</p>
+</section>
+<section>
+<h2>The service buttons</h2>
+<p>SELECT enters the service menu and confirms, PLUS and MINUS move, BACK leaves. On a machine with blank settings the same four buttons work the first-boot Guided Setup. <span class="ev meas">measured</span></p>
+<p>What the 8 output bytes do on the board was not followed. <span class="ev unk">unknown</span></p>
+</section>
+</div>
+
+<div class="view" id="displays" role="tabpanel">
+<section>
+<h1>Displays</h1>
+<p>The game draws with OpenGL ES 2 through EGL, on the graphics driver of the i.MX6 (Vivante). There is no window system: the driver's own framebuffer calls stand in for one.</p>
+<ol class="steps">
+<li><span><code>fbGetDisplayByIndex(n)</code> names a display; <code>fbGetDisplayGeometry</code> gives its size; <code>fbCreateWindow</code> makes a full-screen native window.</span></li>
+<li><span><code>eglChooseConfig</code> asks for RGB 5-6-5 with a 24-bit depth buffer; <code>eglCreateContext</code> for client version 2, sharing nothing.</span></li>
+<li><span>One render thread makes the context current, draws, and calls <code>eglSwapBuffers</code>, about 55 times a second in step with the main loop.</span></li>
+</ol>
+<p>The same function sets up every display (Godzilla 0x5bef10, Star Wars 0x4efde0): it takes a display object and an index and fills in the object's EGL display, config, surface, context, width and height. <span class="ev code">game</span> <span class="ev meas">measured</span></p>
+</section>
+<section>
+<h2>Display 0: the LCD</h2>
+<p>Every title opens display 0, the large LCD in the backbox. The recompilation gives it a 1366 x 768 window; video is decoded at 1360 x 768, and the first entry of Star Wars' timing table for <code>/dev/fb0</code> is a 1360 x 768 mode. <span class="ev meas">measured</span> <span class="ev code">game</span></p>
+<p>The display object's set-up takes a rotation argument, 0 or 180 degrees, chosen by a byte of a global of the game (Star Wars 0x426704, the byte at 0x70b994 + 0xc). <span class="ev code">game</span></p>
+</section>
+<section>
+<h2>Display 2: a second panel</h2>
+<p>Star Wars Pro also opens display 2. Godzilla has the same two call sites and never creates the second display object; D&amp;D and Batman open display 0 only. It is <code>/dev/fb2</code>: the game holds a 480 x 272 timing for it (table at 0x5b6750, applied at 0x320904) and it is the small screen on that machine's playfield. <span class="ev code">game</span></p>
+<p>It has its own surface and its own context, and the render thread switches between the two every frame. Its picture is not drawn in its own context. The LCD's context renders it into a 480 x 272 texture, and display 2's context shows a texture that shares that memory:</p>
+<div class="tbl"><table><thead><tr><th>Call</th><th>Context</th><th>Effect</th></tr></thead><tbody>
+<tr><td><code>glTexDirectVIV(tex, 480, 272, RGBA, &amp;p)</code></td><td>LCD</td><td>The driver allocates the texture's pixel storage and returns its address.</td></tr>
+<tr><td>render to that texture</td><td>LCD</td><td>On this driver the storage is the texture: drawing into it changes the memory.</td></tr>
+<tr><td><code>glTexDirectVIVMap(tex2, 480, 272, RGBA, &amp;p, &hellip;)</code></td><td>display 2</td><td>A second texture is laid over the same address.</td></tr>
+<tr><td><code>glTexDirectInvalidateVIV</code>, draw, swap</td><td>display 2</td><td>The second panel shows what the first context drew.</td></tr>
+</tbody></table></div>
+<p class="note">Elsewhere the same extension carries video: decoded frames are handed to a texture as I420 with <code>glTexDirectVIVMap</code>. On a desktop GPU none of this memory sharing exists; the recompilation gives each display its own window and context and copies the texture on the GPU when the second one is invalidated. <span class="ev model">model</span></p>
+<p>Batman 66 also has a small screen on its playfield, but it is not a display of the CPU board at all: see the <a href="lcd_node.html">LCD node</a> page.</p>
+</section>
+<section>
+<h2>Video</h2>
+<p>Video clips are MP4 files with H.264, played through GStreamer 0.10, which on the machine uses the VPU. The game opens <code>/dev/mxc_vpu</code> itself in the newer builds and continues without it. The recompilation decodes with FFmpeg behind the same GStreamer calls. <span class="ev code">game</span> <span class="ev model">model</span></p>
+</section>
+</div>
+
+<div class="view" id="sound" role="tabpanel">
+<section>
+<h1>Sound</h1>
+<p>The game mixes its own sound and plays it through ALSA on two sound cards, each an SGTL5000 codec with an amplifier behind its line output. Card names and mixer names are in <code>/etc/asound.conf</code> on the card. <span class="ev card">card</span></p>
+<div class="tbl"><table><thead><tr><th>ALSA card</th><th>Mixer</th><th>Codec</th><th>Speakers</th></tr></thead><tbody>
+<tr><td><code>sgtl5000main</code> (card 0)</td><td><code>backbox</code></td><td>I2C 0x0a</td><td>the two backbox speakers</td></tr>
+<tr><td><code>sgtl5000center</code> (card 1)</td><td><code>cabinet</code></td><td>I2C 0x2a</td><td>the cabinet speaker, as a differential pair: its right channel is the inverse of its left <span class="ev meas">measured</span></td></tr>
+</tbody></table></div>
+<p>Which address is which card follows from the values: what the game writes over I2C at start (headphone volume 0x1010 to 0x0a and 0x4040 to 0x2a) is what the card's saved mixer state holds for the two cards. <span class="ev code">game</span> <span class="ev card">card</span></p>
+</section>
+<section>
+<h2>What the game sets</h2>
+<div class="tbl"><table><thead><tr><th>What</th><th>How</th><th>Values seen in Godzilla LE 1.16.0</th></tr></thead><tbody>
+<tr><td>Start-up programming</td><td>I2C, 0x00336d1c</td><td><code>CHIP_ANA_CTRL</code> 0x0020 / 0x0022 (line out and headphone unmuted), <code>CHIP_ANA_HP_CTRL</code> 0x1010 / 0x4040, <code>CHIP_ANA_POWER</code> 0x4060, <code>CHIP_LINE_OUT_CTRL</code> 0x0322, <code>DAP_AVC_CTRL</code> 0x0100</td></tr>
+<tr><td>Volume</td><td>ALSA control <code>PCM</code> on both cards (0x003368ec)</td><td><code>range x (volume / 63)^0.2</code>: 130 and 119 of 192 at that image's settings</td></tr>
+<tr><td>Headphone volume</td><td>ALSA control <code>Headphone</code> on <code>backbox</code></td><td>32 of 127 at start</td></tr>
+<tr><td>Mute</td><td>ALSA switch <code>Line Out Mute</code> (0x00336f30)</td><td>skipped when the card has no such control</td></tr>
+</tbody></table></div>
+<p><span class="ev code">game</span></p>
+</section>
+<section>
+<h2>Headphones</h2>
+<p>The headphone kit adds four inputs on the CPU board: cable detect, headphone detect, and the two phases of a volume knob. With headphones in (0x004d43c8) the game mutes the line output of both cards and puts <code>PCM</code> at the top of its range, so that <code>Headphone</code> alone sets the loudness. Unplugging puts both back. <span class="ev code">game</span></p>
+<p>The knob is a two-phase rotary encoder. The game counts transitions, one way up and the other down, and moves <code>Headphone</code> by 2 of 127 when the count reaches 3. <span class="ev meas">measured</span></p>
+<p class="note">Not known: where the cabinet codec's headphone output goes on the board, and whether the kernel on the card has a <code>Line Out Mute</code> control at all (the saved mixer state lists none). <span class="ev unk">unknown</span></p>
+</section>
+</div>
+
+<div class="view" id="open" role="tabpanel">
+<section>
+<h1>What is still open</h1>
+<ul>
+<li>The chip at I2C address 0x68 that the newer builds probe.</li>
+<li>What the three serial <code>ioctl</code>s on <code>/dev/ttymxc1</code> are for, and whether a game minds their failing. None of the four does.</li>
+<li>The 8 output bytes of the SPI exchange.</li>
+<li>The HDMI transmitter: Star Wars opens it and sets timings on two framebuffers; which physical outputs those are was inferred from the timings alone.</li>
+<li>The connectivity kit: its own card on <code>/connectivity</code>, the <code>conagent</code> program beside the game, the shared-memory blocks and the QR reader board. The recompilation never connects to Stern's servers; these fail as they would on a machine without the kit.</li>
+<li>Everything about the board that software cannot show: the schematic, power sequencing, what the amplifiers are.</li>
+</ul>
+</section>
+</div>
+</div>
+<script>
+(function(){"use strict";
+const $=(s,r)=>(r||document).querySelector(s),$$=(s,r)=>Array.from((r||document).querySelectorAll(s));
+const tabs=$$(".tabs button"),views=$$(".view");
+function show(id,push){
+  if(!views.some(v=>v.id===id))id=views[0].id;
+  views.forEach(v=>v.hidden=v.id!==id);
+  tabs.forEach(t=>t.setAttribute("aria-selected",t.dataset.view===id?"true":"false"));
+  if(push){try{history.replaceState(null,"","#"+id);}catch(e){}window.scrollTo(0,0);}
+}
+tabs.forEach(t=>t.addEventListener("click",()=>show(t.dataset.view,true)));
+window.addEventListener("hashchange",()=>{show(location.hash.slice(1),false);window.scrollTo(0,0);});
+show(location.hash.slice(1)||views[0].id,false);
+const root=document.documentElement,tb=$("#theme");
+function isDark(){const t=root.getAttribute("data-theme");return t?t==="dark":matchMedia("(prefers-color-scheme:dark)").matches;}
+function label(){tb.textContent=isDark()?"light":"dark";}
+try{const s=localStorage.getItem("nb-theme");if(s)root.setAttribute("data-theme",s);}catch(e){}
+label();
+tb.addEventListener("click",()=>{const n=isDark()?"light":"dark";root.setAttribute("data-theme",n);try{localStorage.setItem("nb-theme",n);}catch(e){}label();});
+})();
+</script>
+</html>
