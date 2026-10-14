@@ -139,7 +139,7 @@ ol.steps li::before{content:counter(st);font:500 0.85rem var(--mono);color:var(-
 <dl class="feat">
 <dt>On the bus</dt><dd>Node address 24 in Batman, board type 17, part 520-6988-XX, firmware name <code>lcdnode</code>, image for an LPC1113. It answers the common commands of every node board (version, status, inputs, reset, boot loader). <span class="ev meas">measured</span></dd>
 <dt>Screens</dt><dd>Up to four LCDs per board; Batman has one. A string among the game's device names reads "LCD 320X240". <span class="ev code">game</span> <span class="ev fw">firmware</span></dd>
-<dt>Timer</dt><dd>Durations are in board ticks. With 1280 ticks a second, the rate the other boards of this family report, the game's eight frame periods come out as 30, 24, 20, 16, 15, 12, 10 and 8 frames a second. The board's own tick rate was not read. <span class="ev code">game</span> <span class="ev model">model</span></dd>
+<dt>Timer</dt><dd>Durations are in board ticks, 1280 a second: SysTick with a reload of 0x927b (37500 cycles at 48 MHz), set up at 0x4568. The main loop runs the player and the backlight once each time the tick count changes. The game's eight frame periods come out as 30, 24, 20, 16, 15, 12, 10 and 8 frames a second. <span class="ev fw">firmware</span> <span class="ev code">game</span></dd>
 </dl>
 </section>
 </div>
@@ -149,26 +149,29 @@ ol.steps li::before{content:counter(st);font:500 0.85rem var(--mono);color:var(-
 <h1>Commands</h1>
 <p>All of them are sub-commands of the node service command <code>f2</code>. The game holds one record per LCD (0x38 bytes, table at <code>*0x8716ac</code>); its interface functions only write a request into the record, and one function, 0x498dc0, turns pending requests into messages. A second, 0x498fe8, polls the status. Both are called from 0x292950. <span class="ev code">game</span></p>
 <div class="tbl"><table><thead><tr><th>Message</th><th>Meaning</th><th>Built at</th><th>Reply</th></tr></thead><tbody>
-<tr><td class="w"><code>f2 98|n c</code></td><td>Queue control, sent before every request: 1 = let the run in progress finish, 2 = drop it. The firmware also knows 3 (empty the queue), 4 and 5.</td><td class="n">0x5aaae0</td><td>none</td></tr>
-<tr><td class="w"><code>f2 98|n r frame:32</code></td><td>Show one frame.</td><td class="n">0x5aaa68</td><td>none</td></tr>
-<tr><td class="w"><code>f2 98|n r first:32 last:32 period:16</code></td><td>Play the frames from <code>first</code> to <code>last</code>, one every <code>period</code> + 1 ticks. <code>last</code> below <code>first</code> plays backwards.</td><td class="n">0x5aa8c0</td><td>none</td></tr>
-<tr><td class="w"><code>f2 98|n r a:32 b:32 c:32 d:32 &hellip; period:16</code></td><td>A run with an inner range that repeats. The game has the builder; no caller was seen to use it.</td><td class="n">0x5aa96c</td><td>none</td></tr>
-<tr><td class="w"><code>f2 80|n level ramp</code></td><td>Backlight: 0x00 or 0xff seen, with a ramp of 0x0f.</td><td class="n">0x5aa7e8</td><td>none</td></tr>
+<tr><td class="w"><code>f2 98|n c</code></td><td>Queue control, sent before every request: 1 = let the run in progress finish, 2 = drop it. The firmware also knows 3 (empty the queue), 4 (pause) and 5 (resume); see the player.</td><td class="n">0x5aaae0</td><td>none</td></tr>
+<tr><td class="w"><code>f2 98|n f frame:32</code></td><td>Show one frame. The board queues it as a run from <code>frame</code> to <code>frame</code> with a period of 50 ticks (0x1944).</td><td class="n">0x5aaa68</td><td>none</td></tr>
+<tr><td class="w"><code>f2 98|n f first:32 last:32 period:16</code></td><td>Play the frames from <code>first</code> to <code>last</code>, one every <code>period</code> + 1 ticks. <code>last</code> below <code>first</code> plays backwards.</td><td class="n">0x5aa8c0</td><td>none</td></tr>
+<tr><td class="w"><code>f2 98|n f first:32 last:32 period:16 inner_first:32 inner_last:32 repeat:16</code></td><td>Play <code>first</code> to <code>last</code> with the inner range played <code>repeat</code> times. The field order is that of the firmware's parser (0x1944) and of the game's builder. The game request that sends it (0x4989f8) has no caller in Batman 1.14.0.</td><td class="n">0x5aa96c</td><td>none</td></tr>
+<tr><td class="w"><code>f2 80|n level ramp</code></td><td>Backlight: fade to <code>level</code>; <code>ramp</code> 0 sets it at once. The game sends 0x00 or 0xff, with a ramp of 0x0f (about a quarter of a second) or 0.</td><td class="n">0x5aa7e8</td><td>none</td></tr>
 <tr><td class="w"><code>f2 90 n</code></td><td>Status of LCD <code>n</code>.</td><td class="n">0x5a9b60</td><td>12 bytes; the first four are the frame on the screen</td></tr>
 <tr><td class="w"><code>f2 30</code></td><td>Version of the picture set in flash.</td><td class="n">0x5a9c34</td><td>12 bytes</td></tr>
 <tr><td class="w"><code>f2 60</code> and others</td><td>Programming the flash, 0x200 bytes at a time.</td><td class="n">0x5aa3f8, 0x5aa7c0</td><td></td></tr>
 </tbody></table></div>
-<p class="note"><code>n</code> is the LCD number 0..3, in the low bits of the sub-command except for the status, where it is a byte of its own. <code>r</code> is a repeat count, always 0 from the game. Numbers are little-endian.</p>
+<p class="note"><code>n</code> is the LCD number 0..3, in the low bits of the sub-command except for the status, where it is a byte of its own. <code>f</code> is a flags byte, always 0 from the requests Batman uses (0x4989f8 would send 0x10): its low three bits are a queue control the board applies before queueing the run, 0x08 puts the run in front of the one playing, and 0x10 plays the inner range back and forth. Numbers are little-endian. The firmware sees the length byte one higher than the game writes it (4, 8, 0xe, 0x18). <span class="ev fw">firmware</span> <span class="ev code">game</span></p>
 </section>
 <section>
 <h2>What the game asks for</h2>
 <div class="tbl"><table><thead><tr><th>Game function</th><th>Request</th></tr></thead><tbody>
 <tr><td class="w"><code>0x4988e4(lcd, first, last, speed, wait)</code></td><td>Play a run. <code>speed</code> 0..7 picks the period from a table at 0x711840: 43, 53, 64, 80, 84, 106, 128, 160 ticks. The function then waits until the reported frame is outside the run.</td></tr>
+<tr><td class="w"><code>0x4989f8(lcd, first, inner_first, inner_last, last, repeat, speed, back_and_forth, queue)</code></td><td>Play a run with a repeated inner range, without waiting. Not marked as a function by the Ghidra analysis; there is no direct call to it and no pointer to it in Batman 1.14.0.</td></tr>
 <tr><td class="w"><code>0x498acc(lcd, frame)</code></td><td>Show one frame.</td></tr>
-<tr><td class="w"><code>0x498c74(lcd, on, value)</code></td><td>Backlight.</td></tr>
+<tr><td class="w"><code>0x498c74(lcd, level, ramp)</code></td><td>Backlight.</td></tr>
 <tr><td class="w"><code>0x498fe8()</code></td><td>Poll every LCD's status; about every 47 ms.</td></tr>
 </tbody></table></div>
 <p>In attract mode Batman runs a slideshow: backlight off, a quarter of a second later a new frame and backlight on, the next change 5.7 seconds after. Frames 2, 54, 720, 591, 601 and 1605 came up in one minute. Starting a game played frames 820 to 830 at 12 a second. <span class="ev meas">measured</span></p>
+<p>Calls with constant arguments, from a scan of the executable: plays of 484 to 496, 1432 to 1434 and 2119 to 2152 (speed 3), 820 to 830, 919 to 928 and 929 to 938 (speed 5), and one-frame plays of 2153 and 2155. One more play takes its first and last frame from a table built at run time (0xb27f0: <code>*(0x8703bc) + 0xa0</code>). Plays usually follow the same pattern: backlight off with ramp 15, a still of the first frame, backlight on, then the play. <span class="ev code">game</span></p>
+<p>The villain effects are not plays. Frames such as 274/275, 315/317, 334 to 343 and 402/403 are flashed by the game sending stills in a loop with short waits between them (0xa2a84, 0x129404 and others), so on the board they are a series of one-frame runs. <span class="ev code">game</span></p>
 </section>
 </div>
 
@@ -177,16 +180,24 @@ ol.steps li::before{content:counter(st);font:500 0.85rem var(--mono);color:var(-
 <h1>The board's player</h1>
 <p>The firmware keeps, for each LCD, a queue of sixteen runs (entries of 0x1c bytes, read and write index wrapping at 15) and steps the one at the head from its timer. <span class="ev fw">firmware</span></p>
 <ol class="steps">
-<li><span><b>Queueing</b> (0x2eb0). A run is first, last, period and a repeat count. If last is below first the two are exchanged and the direction becomes -1. The current frame starts at the end the game named first. A full queue drops the request.</span></li>
-<li><span><b>Stepping</b> (0x2f8c), once per tick for every LCD that is not idle: a countdown is decremented; at zero it is reloaded with the period and the current frame moves one step.</span></li>
-<li><span><b>The end.</b> When the frame is the last one and the countdown runs out again, the run is over: the read index moves on. If the queue is then empty the LCD is idle and keeps showing that frame.</span></li>
-<li><span><b>Queue control</b> (0x2dc4) acts on the run in progress: drop it, empty the queue, stop and resume stepping, or let a repeating run end after its current pass.</span></li>
+<li><span><b>Queueing</b> (0x2eb0). A run is first, last, an inner range, a repeat count, the period and the flags. If last is below first the two are exchanged and the direction becomes -1. The current frame starts at the end the game named first, and the countdown at the period. If the inner range, put in order, is not inside first..last, the repeat is turned off. The low three bits of the flags are then applied as a queue control. A full queue (read index equal to write index while not empty) refuses the run, and the reply carries an error bit. Flag 0x08 puts the run before the head (the read index moves back one); the run it displaces keeps its frame and countdown and continues after it.</span></li>
+<li><span><b>Stepping</b> (0x2f8c), once per tick, for the head of every LCD's queue unless it is paused: while the countdown is above zero it is decremented; at zero it is reloaded with the period and the run takes a step. So each frame stays up for period + 1 ticks.</span></li>
+<li><span><b>A step forwards.</b> At the end of the inner range with a repeat left, the repeat is counted down. With more passes to go, the frame jumps back to the start of the inner range, or with flag 0x10 the direction turns round. On the last pass it goes on towards <code>last</code>. Otherwise the frame moves up one, and at <code>last</code> the run ends.</span></li>
+<li><span><b>A step backwards.</b> The same at the start of the inner range, mirrored: with passes to go the frame jumps to the end of the inner range, or with flag 0x10 the direction turns forwards. On the last pass the direction becomes forwards in either case, so a run played backwards with a repeat finishes going up. Otherwise the frame moves down one, and at <code>first</code> the run ends.</span></li>
+<li><span><b>The end</b> (0x2aa8). The read index moves on. If the queue is then empty the LCD is idle and keeps showing the frame it drew last.</span></li>
+<li><span><b>Queue control</b> (0x2dc4, jump table at 0x4c50), with runs queued: 0 nothing; 1 the head's repeat becomes 1 (2 when it is going forwards back and forth), so it ends after the current pass; 2 drop the head; 3 empty the queue; 4 pause the head; 5 resume it. With nothing queued only 2 and 3 do anything, and 4 or 5 runs into an undefined instruction.</span></li>
 </ol>
 <p>So a run of N frames takes N periods, and the frame the status reports is the last one of the run from then on. That is what the game's wait relies on: it returns when the reported frame is no longer inside <code>first</code> to <code>last</code> - 1.</p>
 </section>
 <section>
 <h2>Drawing</h2>
-<p>The firmware writes pixels to the panel as 16 bits (5-6-5) or as 12 bits (4-4-4), depending on a per-LCD setting (0x32d4). Frames come from the flash; nothing is ever drawn from bytes the game sent. <span class="ev fw">firmware</span></p>
+<p>The firmware writes pixels to the panel as 16 bits (5-6-5) or as 12 bits (4-4-4), depending on a per-LCD setting (0x32d4). Frames come from the flash; nothing is ever drawn from bytes the game sent. A frame is drawn when the head's frame has changed and the previous transfer to the panel has finished (0x3648), so a fast run may skip frames on the board. Frame numbers run through all the picture sets in flash: a number past the end of one set continues in the next. <span class="ev fw">firmware</span></p>
+</section>
+<section>
+<h2>Backlight</h2>
+<p>Each LCD's backlight level is kept as <code>level &times; 0x80</code> in 16 bits, and the PWM gets the top byte. <code>f2 80</code> (0x33f8) sets the target. With ramp 0 the level is set at once. Otherwise a step is worked out once: <span class="ev fw">firmware</span></p>
+<p><code>step = (target - level) &times; table[ramp] &gt;&gt; 20</code>, at least 1 (or -1 going down)</p>
+<p>and every tick (0x3648) the step is added until the level passes the target, which it is then set to. The table at 0x4ca0 holds <code>51200 / ramp</code>, read as a signed 16-bit number. A full swing between 0 and 0xff therefore takes about <code>ramp &times; 16</code> ms: the game's ramp of 15 is about a quarter of a second. Ramp 1 is the exception: 51200 does not fit, reads as -14336, and the level lands on the target on the first tick. <span class="ev fw">firmware</span></p>
 </section>
 </div>
 
@@ -215,15 +226,17 @@ ol.steps li::before{content:counter(st);font:500 0.85rem var(--mono);color:var(-
 </tbody></table></div>
 <p><span class="ev meas">measured</span></p>
 <p>So the pictures are installed at the factory, and a release that updates them would carry a file for it. The frame numbers the game asks for are known; the pixels are not. Showing this screen needs the contents of the board's flash chip. <span class="ev unk">unknown</span></p>
+<p>A dump of 226 Batman frames was supplied separately, as one 320&times;240 PPM picture per frame number (2, 54, 274 to 3026, with gaps). It covers every frame of the constant plays listed above and of the attract slideshow. It is not part of this project and is not on the card.</p>
 </section>
 </div>
 
 <div class="view" id="sim" role="tabpanel">
 <section>
 <h1>The simulator</h1>
-<p>The recompilation's board model (<code>src/runtime/lcd_node.cpp</code>) keeps what the player keeps: per LCD the queue of runs, the frame on the screen worked out from the time since the run began, and the backlight level. It answers the status with the frame, so a run the game waits for takes its real time. <span class="ev model">model</span></p>
-<p>A window, "SPIKE2 playfield screens", shows each LCD as the number of the frame that is up, lit or dark with the backlight. It appears only on a machine whose game addresses such a board. <code>SPIKE2_LCD=0</code> turns it off.</p>
-<p>Not modelled: the run with an inner range (played once straight through), repeat counts, the backlight ramp, and bytes 4 to 11 of the status reply, which stay zero.</p>
+<p>The recompilation's board model (<code>src/runtime/lcd_node.cpp</code>) is the player above, transcribed: per LCD the queue of sixteen runs with their countdowns, the steps with repeats and both directions, the flags, the queue controls, and the backlight fade. Board time is counted in 1280 Hz ticks from the host clock, and the player and the fade are brought up to date tick by tick whenever the game or the window asks. It answers the status with the frame on the screen, so a run the game waits for takes its real time. <span class="ev model">model</span></p>
+<p>A window, "SPIKE2 playfield screens", shows each LCD. With <code>--lcd-frames DIR</code> (or a folder <code>lcd_frames</code> beside the executable or in the working directory) holding one <code>&lt;frame&gt;.ppm</code> per frame number, it draws the frame's picture; without one, it draws the frame's number. Either way it is lit as the backlight is lit, and black when the backlight is off. A picture is loaded the first time its frame comes up. The window appears only on a machine whose game addresses such a board. <code>SPIKE2_LCD=0</code> turns it off.</p>
+<p>The log has a line for every play the game asks for (<code>lcd ... play frames A..B</code>), and for the first 40 stills and backlight changes.</p>
+<p>Not modelled: the time the board takes to send a picture to the panel (frames are never skipped), the error bit of the reply when the queue is full (the run is dropped and logged), and bytes 4 to 11 of the status reply, which stay zero.</p>
 </section>
 </div>
 </div>
